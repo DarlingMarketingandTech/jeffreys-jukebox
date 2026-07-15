@@ -15,7 +15,10 @@ A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The exp
 - **Light One Up** ramps a native Canvas 2D smoke field through the whole room while a subtle Web Audio treatment warms the sound.
 - The smoke is cursor-reactive, device-pixel-ratio aware, and fully stops its animation loop at zero density to preserve battery.
 - Left and right room views use real Alley Cat pool-room, signed-wall, and graffiti-alley photography without leaving the listening room.
+- Side views reveal an interactive cardboard coaster that switches between sober bar advice and hazy late-night realizations.
+- The crooked napkin card serves another thought without leaving the room or interrupting the record.
 - The arrival plaque opens a compact Alley Cat history card using the real exterior and 6267 Carrollton Ave details.
+- A lightweight analyser shared with the existing Web Audio graph drives a red-orange joint ember from Jeffrey's real-time vocal and music levels.
 - Music continues while browsing title cards, turning pages, changing the room mood, looking around, or stepping away from the machine.
 - A persistent now-playing strip keeps pause/resume, progress, and track identity available outside the close-up.
 - Supported browsers expose their native Remote Playback picker for compatible TVs and speakers; unsupported devices hide that control.

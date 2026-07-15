@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AudioEmber } from "@/components/AudioEmber";
+import { BarPhilosophy } from "@/components/BarPhilosophy";
 import { SmokeCanvas } from "@/components/SmokeCanvas";
 import { useMood } from "@/lib/mood";
 import type { Track } from "@/lib/tracks";
@@ -13,6 +15,7 @@ type RemoteEvent = "connecting" | "connect" | "disconnect";
 
 type AudioGraph = {
   context: AudioContext;
+  analyser: AnalyserNode;
   dryGain: GainNode;
   wetGain: GainNode;
   lowpass: BiquadFilterNode;
@@ -156,17 +159,20 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
     try {
       const context = new AudioContext();
       const source = context.createMediaElementSource(audio);
+      const analyser = context.createAnalyser();
       const dryGain = context.createGain();
       const wetGain = context.createGain();
       const lowpass = context.createBiquadFilter();
       const convolver = context.createConvolver();
 
       lowpass.type = "lowpass";
+      analyser.fftSize = 64;
       convolver.buffer = buildImpulseResponse(context);
-      source.connect(dryGain).connect(context.destination);
-      source.connect(lowpass).connect(convolver).connect(wetGain).connect(context.destination);
+      source.connect(analyser);
+      analyser.connect(dryGain).connect(context.destination);
+      analyser.connect(lowpass).connect(convolver).connect(wetGain).connect(context.destination);
 
-      audioGraphRef.current = { context, dryGain, wetGain, lowpass };
+      audioGraphRef.current = { context, analyser, dryGain, wetGain, lowpass };
       return audioGraphRef.current;
     } catch {
       return null;
@@ -341,6 +347,8 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
         <button onClick={() => setLook("right")} className={look === "right" ? "active" : ""}>WALL →</button>
       </nav>
 
+      <BarPhilosophy />
+
       {look !== "center" && (
         <aside className={`bar-story story-${look}`} aria-live="polite">
           <span>{look === "left" ? "AT THE BAR" : "SCRATCHED INTO THE WALL"}</span>
@@ -420,6 +428,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
 
       {approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
       <div className="smoke-status" aria-live="polite">{mood === "hazy" ? "ROOM: HAZY" : "ROOM: CLEAR ENOUGH"}</div>
+      <AudioEmber analyserNode={audioGraphRef.current?.analyser ?? null} isPlaying={playing} />
 
       {showMusicDock && (
         <section className="music-dock" aria-label="Persistent music controls">
