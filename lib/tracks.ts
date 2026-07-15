@@ -5,14 +5,15 @@ export type Track = {
   audio?: string;
 };
 
-const drive = (id: string) => `https://drive.google.com/uc?export=download&id=${id}`;
+const cloudinary = (version: string, name: string) =>
+  `https://res.cloudinary.com/dr0xs4iar/video/upload/v${version}/jeffreys-jukebox/audio/${name}.mp3`;
 
 const loaded: Track[] = [
-  { code: "A3", title: "Track One", artist: "Jeffrey Taylor Collection", audio: drive("15JGKEK4M5dZT87v7f-FYazrRtPwbx3Vp") },
-  { code: "C7", title: "Track Two", artist: "Jeffrey Taylor Collection", audio: drive("16b88zW6OV1eyYL9OZve8jfE9aR52LVEX") },
-  { code: "F2", title: "Track Four", artist: "Jeffrey Taylor Collection", audio: drive("1DZWspwl8_fp2ZniuEslPLK0kL6jphMUh") },
-  { code: "H8", title: "Track Five", artist: "Jeffrey Taylor Collection", audio: drive("1nHfdTTegE17QEtlAf6NDq7pwjI4qi-1y") },
-  { code: "L4", title: "Superman (Cover)", artist: "Recovered Recording", audio: drive("1V7SkBHRe8h2KddRCiQ6Fdl9zpcQW1BzU") },
+  { code: "A3", title: "Track One", artist: "Jeffrey Taylor Collection", audio: cloudinary("1784083136", "track-01") },
+  { code: "C7", title: "Track Two", artist: "Jeffrey Taylor Collection", audio: cloudinary("1784083203", "track-02") },
+  { code: "F2", title: "Track Four", artist: "Jeffrey Taylor Collection", audio: cloudinary("1784083226", "track-04") },
+  { code: "H8", title: "Track Five", artist: "Jeffrey Taylor Collection", audio: cloudinary("1784083259", "track-05") },
+  { code: "L4", title: "Superman (Cover)", artist: "Recovered Recording", audio: cloudinary("1784088627", "superman-cover") },
 ];
 
 const names = [
