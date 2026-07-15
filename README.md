@@ -5,7 +5,8 @@ A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The exp
 ## The experience
 
 - The Alley Cat-style room remains visible from arrival through playback; the app never jumps to a generic music-player screen.
-- **Step Up to the Jukebox** moves closer to the same cabinet and room.
+- The opening fades in from black and slowly settles into the room like walking through the bar door.
+- **Walk Up & Pick a Song** uses a first-person camera move toward the same battered machine while leaving the neighboring bar environment visible.
 - The title catalog is stocked with 120 numbered selections: A1–A10 through L1–L10.
 - Five `JT`-marked selections contain Jeffrey's real recovered recordings.
 - Decorative selections politely behave like records that are listed but not loaded.
@@ -13,6 +14,10 @@ A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The exp
 - The visible record changer selects, places, spins, and lowers its tonearm during playback.
 - **Light One Up** adds drifting haze, softened edges, and a subtle room-style audio treatment across the whole environment.
 - Left and right room views reveal small dive-bar details without leaving the listening room.
+- Music continues while browsing title cards, turning pages, changing the room mood, looking around, or stepping away from the machine.
+- A persistent now-playing strip keeps pause/resume, progress, and track identity available outside the close-up.
+- Supported browsers expose their native Remote Playback picker for compatible TVs and speakers; unsupported devices hide that control.
+- Media Session metadata gives Jeffrey useful lock-screen and device-level track information where supported.
 - Large controls, keyboard focus states, responsive layouts, and reduced-motion support are included.
 
 ## Run locally
