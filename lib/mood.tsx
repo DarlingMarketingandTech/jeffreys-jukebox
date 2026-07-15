@@ -7,6 +7,7 @@ export type RoomView = "center" | "left" | "right";
 
 export interface MoodContextType {
   isHazeActive: boolean;
+  isLazyDrift: boolean;
   smokeDensity: number;
   currentView: RoomView;
   toggleHaze: () => void;
@@ -15,15 +16,35 @@ export interface MoodContextType {
 
 const MoodContext = createContext<MoodContextType | null>(null);
 
+const LAZY_DRIFT_MS = 5 * 60 * 1000;
+
+const HAZE_DENSITY_MAX = 0.55;
+
 export function MoodProvider({ children }: { children: ReactNode }) {
   const [isHazeActive, setIsHazeActive] = useState(false);
+  const [hazeSince, setHazeSince] = useState<number | null>(null);
+  const [isLazyDrift, setIsLazyDrift] = useState(false);
   const [smokeDensity, setSmokeDensity] = useState(0);
   const [currentView, setCurrentView] = useState<RoomView>("center");
   const densityRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const target = isHazeActive ? 1 : 0;
+    if (!isHazeActive) {
+      setHazeSince(null);
+      setIsLazyDrift(false);
+      return;
+    }
+
+    setHazeSince(Date.now());
+    setIsLazyDrift(false);
+
+    const timer = window.setTimeout(() => setIsLazyDrift(true), LAZY_DRIFT_MS);
+    return () => window.clearTimeout(timer);
+  }, [isHazeActive]);
+
+  useEffect(() => {
+    const target = isHazeActive ? HAZE_DENSITY_MAX : 0;
     const step = isHazeActive ? 0.02 : 0.01;
 
     const animateDensity = () => {
@@ -57,11 +78,12 @@ export function MoodProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<MoodContextType>(() => ({
     isHazeActive,
+    isLazyDrift,
     smokeDensity,
     currentView,
     toggleHaze: () => setIsHazeActive((active) => !active),
     setView: setCurrentView,
-  }), [currentView, isHazeActive, smokeDensity]);
+  }), [currentView, isHazeActive, isLazyDrift, smokeDensity]);
 
   return <MoodContext value={value}>{children}</MoodContext>;
 }

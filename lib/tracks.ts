@@ -8,11 +8,12 @@ export type Track = {
 const cloudinary = (version: string, name: string) =>
   `https://res.cloudinary.com/dr0xs4iar/video/upload/v${version}/jeffreys-jukebox/audio/${name}.mp3`;
 
+// Note: track-03 is missing from Cloudinary — F2 uses track-04
 const loaded: Track[] = [
-  { code: "A3", title: "Track One", artist: "Jeffrey Taylor", audio: cloudinary("1784083136", "track-01") },
-  { code: "C7", title: "Track Two", artist: "Jeffrey Taylor", audio: cloudinary("1784083203", "track-02") },
-  { code: "F2", title: "Track Four", artist: "Jeffrey Taylor", audio: cloudinary("1784083226", "track-04") },
-  { code: "H8", title: "Track Five", artist: "Jeffrey Taylor", audio: cloudinary("1784083259", "track-05") },
+  { code: "A3", title: "Back Room Serenade", artist: "Jeffrey Taylor", audio: cloudinary("1784083136", "track-01") },
+  { code: "C7", title: "Last Call Waltz", artist: "Jeffrey Taylor", audio: cloudinary("1784083203", "track-02") },
+  { code: "F2", title: "Neon on Carrollton", artist: "Jeffrey Taylor", audio: cloudinary("1784083226", "track-04") },
+  { code: "H8", title: "Pool Table Moon", artist: "Jeffrey Taylor", audio: cloudinary("1784083259", "track-05") },
   { code: "L4", title: "Superman (Cover)", artist: "Jeffrey Taylor", audio: cloudinary("1784088627", "superman-cover") },
 ];
 
@@ -32,6 +33,7 @@ const titleEnds = [
 const artistStarts = [
   "The Ashtray", "Walt Mercer & the", "The County", "June Bell & the", "The Turnaround", "Eddie Vale's",
   "The Mile Marker", "Martha Grey & the", "The House", "Cal Porter's", "The Brass", "Ginny Cole & the",
+  "Broad Ripple", "Carrollton Ave", "The Back Booth", "Meridian Line", "The Alley Cat",
 ];
 
 const artistEnds = [

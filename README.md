@@ -34,14 +34,14 @@ npm run dev -- --hostname 127.0.0.1
 
 Open `http://127.0.0.1:3000`.
 
-## Rename Jeffrey's recovered tracks
+## Jeffrey's recovered tracks
 
-Edit the five loaded entries at the top of `lib/tracks.ts`. The current cabinet locations are:
+The five loaded entries at the top of `lib/tracks.ts`:
 
-- `A3` — Track One
-- `C7` — Track Two
-- `F2` — Track Four
-- `H8` — Track Five
+- `A3` — Back Room Serenade
+- `C7` — Last Call Waltz
+- `F2` — Neon on Carrollton
+- `H8` — Pool Table Moon
 - `L4` — Superman (Cover)
 
 Change the `title` and `artist` values without changing the Cloudinary audio URLs or selection codes.
@@ -55,6 +55,59 @@ The five recordings are public, versioned MP3 assets in Cloudinary cloud `dr0xs4
 The UI uses React 19, the Next.js 16 App Router, fully typed TypeScript, Tailwind CSS v4 semantic theme tokens, a global React 19 mood context, native Canvas 2D smoke rendering, and the native Web Audio API. No animation framework is shipped.
 
 `app/page.tsx` remains a Server Component and wraps the complete experience in `MoodProvider`. The client-side `JukeboxStage` is the integration master: it supplies the smoke as the atmosphere slot and the coaster as the foreground slot without moving or remounting the jukebox audio element. The rendered stack is explicitly ordered as authentic room photo, smoke, mechanical cabinet, then interactive controls and coaster.
+
+Core logic is split across:
+
+- `hooks/useJukeboxAudio.ts` — Web Audio graph, mood filter, analyser state, playback
+- `hooks/useRemotePlayback.ts` — Remote Playback API state
+- `components/JukeboxCabinet.tsx` — visual machine only
+- `components/MusicDock.tsx` — persistent now-playing strip
+- `components/HazeLighter.tsx` — brass lighter ignition ritual
+- `components/jukebox.tsx` — room navigation and orchestration
+
+## 5-minute smoke test checklist
+
+Run `npm run build` first. Then open `http://127.0.0.1:3000` and verify each item before claiming done.
+
+### Arrival and navigation
+
+- [ ] Page fades in from black; room photo is visible (not a blank screen).
+- [ ] **← POOL ROOM** shows the pool-room photo and story header **THE BACK ROOM**.
+- [ ] **JUKEBOX** returns to center / intro view.
+- [ ] **SIGNED WALL →** shows the signed-wall photo and **SCRATCHED INTO THE WALL** story.
+- [ ] **Walk Up & Pick a Song** animates toward the machine without breaking layout.
+
+### Playback
+
+- [ ] Select **A3** and press play; audio starts and vinyl spins.
+- [ ] LED message shows track status; music dock appears with progress.
+- [ ] Pause/resume works from both cabinet and dock.
+- [ ] Skip prev/next moves between the five Jeffrey cuts only.
+- [ ] Pick a dummy track (no JT mark); LED flashes **RECORD SCRATCHED. PICK ANOTHER, JEFF.**
+
+### Haze and smoke
+
+- [ ] **LIGHT ONE UP** (arrival) or cabinet lighter ignites within ~3 seconds of visible room fog.
+- [ ] Status reads **ROOM: HAZY**; clearing returns **ROOM: CLEAR ENOUGH**.
+- [ ] Smoke particles drift above the grain overlay (not invisible underneath).
+- [ ] After 5+ minutes hazy, room gently breathes (lazy-drift).
+
+### Side features
+
+- [ ] Pool room view: joint ember visible top-right; pulses brighter during playback.
+- [ ] Side views: coaster is anchored on the bar surface, not overlapping nav/dock.
+- [ ] Coaster opens sober thoughts when clear; high thoughts when hazy.
+- [ ] Marquee letter flickers; **SERVICED BY JACOB** sticker visible on cabinet.
+
+### Layout (mobile + desktop)
+
+- [ ] At 560px width: nav, dock, coaster, and ember do not overlap.
+- [ ] At desktop width: same — all controls remain tappable.
+- [ ] Music dock pushes look-controls up when visible.
+
+### Build
+
+- [ ] `npm run build` completes with zero errors.
 
 ## Deploy
 

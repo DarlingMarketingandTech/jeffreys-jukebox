@@ -29,4 +29,8 @@ export const soberThoughts = [
   "The neon sign hums in B-flat. Probably.",
   "Rack your own table and mind the house cue.",
   "The jukebox remembers every bad decision in this room.",
+  "Broad Ripple after midnight is a different country.",
+  "College Ave taught this bar everything it knows.",
+  "Don't touch the Bud sign. It's older than you.",
+  "Meridian runs straight; the Cat runs sideways.",
 ] as const;

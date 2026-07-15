@@ -26,8 +26,8 @@ class SmokeParticle {
     this.y = Math.random() * (height + 300);
     this.vx = 0.08 + Math.random() * 0.18;
     this.vy = -(0.06 + Math.random() * 0.14);
-    this.radius = 150 + Math.random() * 150;
-    this.opacity = 0.025 + Math.random() * 0.045;
+    this.radius = 110 + Math.random() * 90;
+    this.opacity = 0.035 + Math.random() * 0.035;
     this.seed = Math.random() * Math.PI * 2;
   }
 
@@ -36,8 +36,8 @@ class SmokeParticle {
     this.y = height * 0.35 + Math.random() * height * 0.8;
     this.vx = 0.08 + Math.random() * 0.18;
     this.vy = -(0.06 + Math.random() * 0.14);
-    this.radius = 150 + Math.random() * 150;
-    this.opacity = 0.025 + Math.random() * 0.045;
+    this.radius = 110 + Math.random() * 90;
+    this.opacity = 0.035 + Math.random() * 0.035;
     this.seed = Math.random() * Math.PI * 2;
   }
 }
@@ -77,7 +77,7 @@ export function SmokeCanvas({ smokeDensity }: SmokeCanvasProps) {
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
       if (particlesRef.current.length === 0) {
-        particlesRef.current = Array.from({ length: 14 }, () => new SmokeParticle(cssWidth, cssHeight));
+        particlesRef.current = Array.from({ length: 10 }, () => new SmokeParticle(cssWidth, cssHeight));
       }
     };
 
@@ -128,7 +128,7 @@ export function SmokeCanvas({ smokeDensity }: SmokeCanvasProps) {
           particle.reset(cssWidth, cssHeight);
         }
 
-        const alpha = particle.opacity * density;
+        const alpha = particle.opacity * density * 0.85;
         const gradient = context.createRadialGradient(
           particle.x,
           particle.y,

@@ -6,9 +6,19 @@ interface AudioEmberProps {
   analyserNode?: AnalyserNode | null;
   audioElement?: HTMLAudioElement | null;
   isPlaying?: boolean;
+  isHazeActive?: boolean;
+  elapsed?: number;
+  duration?: number;
 }
 
-export function AudioEmber({ analyserNode = null, audioElement = null, isPlaying = false }: AudioEmberProps) {
+export function AudioEmber({
+  analyserNode = null,
+  audioElement = null,
+  isPlaying = false,
+  isHazeActive = false,
+  elapsed = 0,
+  duration = 0,
+}: AudioEmberProps) {
   const emberRef = useRef<HTMLSpanElement>(null);
   const animationFrameRef = useRef<number | null>(null);
   const ownedContextRef = useRef<AudioContext | null>(null);
@@ -86,15 +96,18 @@ export function AudioEmber({ analyserNode = null, audioElement = null, isPlaying
     };
   }, [analyserNode, audioElement, isPlaying]);
 
+  const burnRatio = isHazeActive && duration > 0
+    ? Math.max(0.15, 1 - elapsed / duration)
+    : 1;
+
   return (
-    <aside className="fixed bottom-20 right-5 z-[47] hidden select-none items-center gap-2 sm:flex" aria-label="Audio-reactive joint ember">
-      <span className="font-mono text-[7px] font-black uppercase tracking-[0.15em] text-[#89785b]">Audio Ember</span>
-      <div className="relative h-5 w-28 rotate-[-8deg] drop-shadow-[0_5px_7px_rgba(0,0,0,0.8)]" aria-hidden="true">
-        <span className="absolute right-1 top-1/2 h-[9px] w-24 -translate-y-1/2 rounded-l-full border border-[#a9997a] bg-[linear-gradient(180deg,#e7ddc8,#bcae91_55%,#ded1b7)]" />
-        <span className="absolute right-[5px] top-1/2 h-[7px] w-4 -translate-y-1/2 bg-[repeating-linear-gradient(90deg,#765f45_0_2px,#aa9474_2px_4px)] opacity-70" />
+    <aside className="joint-ember" aria-label="Audio-reactive joint ember">
+      <div className="joint-ember-body" aria-hidden="true">
+        <span className="joint-paper" style={{ width: `${burnRatio * 96}px` }} />
+        <span className="joint-filter" />
         <span
           ref={emberRef}
-          className="absolute left-[2px] top-1/2 h-[10px] w-[10px] -translate-y-1/2 rounded-full bg-[#D35400] transition-colors duration-100 will-change-transform"
+          className="joint-cherry"
           data-volume-scale="1.000"
         />
       </div>
