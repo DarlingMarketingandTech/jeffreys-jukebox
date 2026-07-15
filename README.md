@@ -15,7 +15,10 @@ A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The exp
 - **Light One Up** ramps a native Canvas 2D smoke field through the whole room while a subtle Web Audio treatment warms the sound.
 - The smoke is cursor-reactive, device-pixel-ratio aware, and fully stops its animation loop at zero density to preserve battery.
 - Left and right room views use real Alley Cat pool-room, signed-wall, and graffiti-alley photography without leaving the listening room.
+- Side views reveal an interactive cardboard coaster that switches between sober bar advice and hazy late-night realizations.
+- The crooked napkin card serves another thought without leaving the room or interrupting the record.
 - The arrival plaque opens a compact Alley Cat history card using the real exterior and 6267 Carrollton Ave details.
+- A lightweight analyser shared with the existing Web Audio graph drives a red-orange joint ember from Jeffrey's real-time vocal and music levels.
 - Music continues while browsing title cards, turning pages, changing the room mood, looking around, or stepping away from the machine.
 - A persistent now-playing strip keeps pause/resume, progress, and track identity available outside the close-up.
 - Supported browsers expose their native Remote Playback picker for compatible TVs and speakers; unsupported devices hide that control.
@@ -50,6 +53,8 @@ The five recordings are public, versioned MP3 assets in Cloudinary cloud `dr0xs4
 ## Front-end architecture
 
 The UI uses React 19, the Next.js 16 App Router, fully typed TypeScript, Tailwind CSS v4 semantic theme tokens, a global React 19 mood context, native Canvas 2D smoke rendering, and the native Web Audio API. No animation framework is shipped.
+
+`app/page.tsx` remains a Server Component and wraps the complete experience in `MoodProvider`. The client-side `JukeboxStage` is the integration master: it supplies the smoke as the atmosphere slot and the coaster as the foreground slot without moving or remounting the jukebox audio element. The rendered stack is explicitly ordered as authentic room photo, smoke, mechanical cabinet, then interactive controls and coaster.
 
 ## Deploy
 

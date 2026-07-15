@@ -171,7 +171,7 @@ export function SmokeCanvas({ smokeDensity }: SmokeCanvasProps) {
   return (
     <canvas
       ref={canvasRef}
-      className="smoke-canvas"
+      className="smoke-canvas absolute inset-0 h-full w-full pointer-events-none"
       data-smoke-density={smokeDensity.toFixed(2)}
       aria-hidden="true"
     />
