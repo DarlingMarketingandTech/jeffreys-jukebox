@@ -234,7 +234,13 @@ button { color: inherit; }
   transition: opacity .8s ease, transform 1.2s cubic-bezier(.18,.8,.18,1), filter .8s ease;
 }
 
-.standing-back .jukebox-zone { opacity: 0; transform: translate(22vw, 13vh) scale(.42); filter: brightness(.55); pointer-events: none; }
+.standing-back .jukebox-zone {
+  opacity: .86;
+  transform: translate(25vw, 16vh) scale(.44);
+  transform-origin: center;
+  filter: brightness(.72) saturate(.78);
+  pointer-events: none;
+}
 .approached.look-center .jukebox-zone { opacity: 1; transform: none; }
 .look-left .jukebox-zone, .look-right .jukebox-zone { opacity: 0; transform: translateY(3vh) scale(.9); pointer-events: none; }
 .camera-moving .jukebox-zone { animation: camera-bob 1.15s ease both; }
