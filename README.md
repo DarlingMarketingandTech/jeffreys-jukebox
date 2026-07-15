@@ -1,65 +1,45 @@
 # Jeffrey's Jukebox
 
-A custom, installable jukebox for Jeffrey Taylor, built under the fictional **Darling Jukebox Co. · Established 1985** brand.
+A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The experience is presented as a one-of-one machine from **Darling Juke Joint Works · Indiana · Established 1985**.
 
-## What is included
+## The experience
 
-- Five recovered recordings, converted to browser-friendly MP3 and lightly cleaned/volume-leveled.
-- 96 vintage jukebox title cards so the cabinet feels fully stocked.
-- Amber dots identify the five records that are actually loaded.
-- Previous and Next move only between the loaded records.
-- Decorative cards respond with `RECORD NOT LOADED` instead of appearing broken.
-- New opening room screen with side options before entering the close-up jukebox view.
-- Optional "smoke mode" that adds stylized visual haze/tunnel vision and a looser filtered playback character.
-- Installable Progressive Web App with offline audio caching.
-- Large controls, strong contrast, keyboard focus states, and reduced-motion support.
+- The Alley Cat-style room remains visible from arrival through playback; the app never jumps to a generic music-player screen.
+- **Step Up to the Jukebox** moves closer to the same cabinet and room.
+- The title catalog is stocked with 120 numbered selections: A1–A10 through L1–L10.
+- Five `JT`-marked selections contain Jeffrey's real recovered recordings.
+- Decorative selections politely behave like records that are listed but not loaded.
+- The title book flips in paired pages: A/B, C/D, E/F, and so on.
+- The visible record changer selects, places, spins, and lowers its tonearm during playback.
+- **Light One Up** adds drifting haze, softened edges, and a subtle room-style audio treatment across the whole environment.
+- Left and right room views reveal small dive-bar details without leaving the listening room.
+- Large controls, keyboard focus states, responsive layouts, and reduced-motion support are included.
 
 ## Run locally
 
 ```bash
 npm install
-npm run dev
+npm run dev -- --hostname 127.0.0.1
 ```
 
-Open `http://localhost:3000`.
+Open `http://127.0.0.1:3000`.
 
-## Deploy to Vercel
+## Rename Jeffrey's recovered tracks
 
-1. Create a new GitHub repository and copy this project into it.
-2. Commit and push.
-3. Import the repository at Vercel.
-4. Accept the detected Next.js settings and deploy.
+Edit the five loaded entries at the top of `lib/tracks.ts`. The current cabinet locations are:
 
-The `source-audio` directory is intentionally excluded from Git and Vercel. The cleaned playback files are in `public/audio`.
+- `A3` — Track One
+- `C7` — Track Two
+- `F2` — Track Four
+- `H8` — Track Five
+- `L4` — Superman (Cover)
 
-## Rename the recovered tracks
+Change the `title` and `artist` values without changing the Cloudinary audio URLs or selection codes.
 
-Edit the five real entries near the top of `lib/tracks.ts`:
+## Audio delivery
 
-- `A3` → Track One
-- `C7` → Track Two
-- `F2` → Track Four
-- `H8` → Track Five
-- `L4` → Superman (Cover)
+The five recordings are public, versioned MP3 assets in Cloudinary cloud `dr0xs4iar`, under `jeffreys-jukebox/audio`. Playback uses the Web Audio API only for the optional room treatment; the source recordings are not altered.
 
-Change only the `title` and `artist` values. The audio path and cabinet behavior can stay untouched.
+## Deploy
 
-## Install on Jeffrey's phone
-
-### Android / Chrome
-
-1. Open the deployed URL.
-2. Tap **PUT ON PHONE**, or open Chrome's menu.
-3. Choose **Install app** or **Add to Home screen**.
-
-### iPhone / Safari
-
-1. Open the deployed URL in Safari.
-2. Tap Share.
-3. Choose **Add to Home Screen**.
-
-Open the app once while online so all five records can be cached for offline playback.
-
-## Audio note
-
-The originals are preserved separately. The playback copies received mild noise reduction where appropriate, low/high frequency cleanup, and loudness normalization. Because the actual song identities are not embedded in four files, the interface uses honest placeholder titles rather than guessing.
+The app is a static Next.js 16 App Router page and can be imported directly into Vercel from GitHub. No runtime environment variables are required.
