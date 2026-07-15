@@ -9,6 +9,8 @@ A custom, installable jukebox for Jeffrey Taylor, built under the fictional **Da
 - Amber dots identify the five records that are actually loaded.
 - Previous and Next move only between the loaded records.
 - Decorative cards respond with `RECORD NOT LOADED` instead of appearing broken.
+- New opening room screen with side options before entering the close-up jukebox view.
+- Optional "smoke mode" that adds stylized visual haze/tunnel vision and a looser filtered playback character.
 - Installable Progressive Web App with offline audio caching.
 - Large controls, strong contrast, keyboard focus states, and reduced-motion support.
 
