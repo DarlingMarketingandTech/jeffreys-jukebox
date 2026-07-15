@@ -10,37 +10,64 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
   const [playing, setPlaying] = useState(false);
   const [message, setMessage] = useState("SELECT A RECORD");
 
-  const selectTrack = async (track: Track) => {
+  const playTrack = async (track: Track) => {
+    const audio = audioRef.current;
+
     if (!track.audio) {
       setMessage("RECORD NOT LOADED");
       return;
     }
+
+    if (!audio) {
+      setMessage("PLAYER NOT READY");
+      return;
+    }
+
     setSelected(track);
-    setMessage(`NOW PLAYING · ${track.code}`);
-    requestAnimationFrame(async () => {
-      try {
-        await audioRef.current?.play();
-        setPlaying(true);
-      } catch {
-        setPlaying(false);
-      }
-    });
+    setMessage(`LOADING · ${track.code}`);
+
+    audio.pause();
+    audio.src = track.audio;
+    audio.load();
+
+    try {
+      await audio.play();
+      setPlaying(true);
+      setMessage(`NOW PLAYING · ${track.code}`);
+    } catch {
+      setPlaying(false);
+      setMessage("TAP PLAY TO START");
+    }
   };
 
   const move = (direction: number) => {
     const index = loaded.findIndex((track) => track.code === selected.code);
     const next = loaded[(index + direction + loaded.length) % loaded.length];
-    void selectTrack(next);
+    void playTrack(next);
   };
 
   const toggle = async () => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !selected.audio) return;
+
     if (audio.paused) {
-      try { await audio.play(); setPlaying(true); } catch { setPlaying(false); }
+      if (!audio.src || audio.src !== selected.audio) {
+        audio.src = selected.audio;
+        audio.load();
+      }
+
+      try {
+        await audio.play();
+        setPlaying(true);
+        setMessage(`NOW PLAYING · ${selected.code}`);
+      } catch {
+        setPlaying(false);
+        setMessage("AUDIO COULD NOT START");
+      }
     } else {
       audio.pause();
       setPlaying(false);
+      setMessage(`PAUSED · ${selected.code}`);
     }
   };
 
@@ -66,7 +93,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
                 <button
                   key={track.code}
                   className={`song-card ${track.audio ? "loaded" : ""} ${selected.code === track.code ? "selected" : ""}`}
-                  onClick={() => void selectTrack(track)}
+                  onClick={() => void playTrack(track)}
                   aria-label={`${track.code}, ${track.title} by ${track.artist}${track.audio ? ", playable" : ", display only"}`}
                 >
                   <span className="code">{track.code}</span>
@@ -85,7 +112,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
               <div className={`arm ${playing ? "down" : ""}`} aria-hidden="true" />
             </div>
 
-            <div className="now-playing">
+            <div className="now-playing" aria-live="polite">
               <span>{playing ? "NOW PLAYING" : "READY"}</span>
               <h2>{selected.title}</h2>
               <p>{selected.artist}</p>
@@ -93,12 +120,16 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
 
             <audio
               ref={audioRef}
-              key={selected.audio}
               src={selected.audio}
               preload="metadata"
+              playsInline
               onPlay={() => setPlaying(true)}
               onPause={() => setPlaying(false)}
               onEnded={() => move(1)}
+              onError={() => {
+                setPlaying(false);
+                setMessage("AUDIO LOAD ERROR");
+              }}
             />
 
             <div className="controls">
