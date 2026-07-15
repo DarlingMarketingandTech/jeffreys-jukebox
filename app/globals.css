@@ -1,3 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-alley-black: #070605;
+  --color-alley-oxblood: #4f1515;
+  --color-alley-rust: #7c2e1f;
+  --color-alley-nicotine: #c3a267;
+  --color-alley-paper: #d9c99e;
+  --color-alley-brass: #a68448;
+  --color-alley-pool: #26392d;
+  --font-family-machine: "Courier New", monospace;
+  --font-family-signage: Georgia, "Times New Roman", serif;
+}
+
 :root {
   --black: #070605;
   --soot: #11100d;
@@ -46,6 +60,8 @@ button { color: inherit; }
 .approached.look-center .scene-backdrop { transform: scale(1.18) translate(-4.5%, 2%); }
 .approached.look-left .scene-backdrop { transform: scale(1.2) translate(5%, 2%); }
 .approached.look-right .scene-backdrop { transform: scale(1.2) translate(-10%, 2%); }
+.look-left .scene-backdrop img { object-position: center 48%; }
+.look-right .scene-backdrop img { object-position: center 42%; filter: brightness(.58) saturate(.36) contrast(1.15) sepia(.22); }
 .mood-hazy .scene-backdrop { filter: blur(1.35px) saturate(.55) sepia(.2); }
 
 .room-shade {
@@ -177,6 +193,55 @@ button { color: inherit; }
 .arrival-smoke { padding: 0 11px; color: #9fa78d; background: linear-gradient(#29352d, #17211c); }
 .step-up:hover, .arrival-smoke:hover { filter: brightness(1.22); transform: translateY(-1px); }
 
+.about-trigger {
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 10px;
+  border: 0;
+  border-top: 1px solid #403721;
+  color: #766a52;
+  background: transparent;
+  font: 800 .46rem "Courier New", monospace;
+  letter-spacing: .1em;
+  cursor: pointer;
+}
+.about-trigger:hover { color: #b9a476; }
+
+.about-panel {
+  position: fixed;
+  z-index: 54;
+  top: 50%;
+  left: clamp(18px, 5vw, 72px);
+  width: min(440px, calc(100vw - 36px));
+  max-height: calc(100svh - 44px);
+  overflow: auto;
+  padding: 15px;
+  border: 1px solid #6d5a39;
+  border-left: 5px solid #591c18;
+  color: #b9a77d;
+  background: #0b0907f5;
+  box-shadow: 0 30px 90px #000, inset 0 0 35px #000a;
+  transform: translateY(-50%) rotate(-.35deg);
+  backdrop-filter: blur(10px);
+  animation: story-enter .32s ease both;
+}
+.about-photo,
+.story-photo {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #57492e;
+  background: #090806;
+  filter: sepia(.12) saturate(.72) contrast(1.06);
+}
+.about-photo { height: 192px; margin-bottom: 17px; }
+.about-photo img,
+.story-photo img { object-fit: cover; }
+.about-panel > span { color: #8f2e25; font: 900 .55rem "Courier New", monospace; letter-spacing: .2em; }
+.about-panel h2 { margin: 6px 0 10px; color: #d6c18f; font-weight: 500; letter-spacing: .045em; }
+.about-panel p { margin: 0 0 12px; font-size: .98rem; line-height: 1.55; }
+.about-panel b { color: #b09a68; }
+.about-panel button { min-height: 36px; padding: 0 13px; border: 1px solid #5f5136; color: #998865; background: #171410; font: 800 .54rem "Courier New", monospace; letter-spacing: .1em; cursor: pointer; }
+
 .look-controls {
   position: fixed;
   z-index: 42;
@@ -222,6 +287,7 @@ button { color: inherit; }
 .story-right { right: clamp(16px, 7vw, 100px); }
 .bar-story span { color: #9c3529; font: 900 .58rem "Courier New", monospace; letter-spacing: .17em; }
 .bar-story p { color: #c3b083; font-size: 1.22rem; line-height: 1.45; }
+.story-photo { height: 150px; margin: 15px 0; }
 
 .jukebox-zone {
   min-height: 100svh;
@@ -493,12 +559,15 @@ button { color: inherit; }
 .dock-toggle, .dock-cast { width: 35px; height: 35px; border: 1px solid #5f5033; color: #c8b587; background: #401514; cursor: pointer; }
 .dock-cast { width: 30px; color: #978767; background: #16130f; }
 
-.room-haze { position: fixed; inset: -20%; z-index: 15; pointer-events: none; overflow: hidden; mix-blend-mode: screen; }
-.room-haze::after { content: ""; position: absolute; inset: 8%; background: radial-gradient(ellipse at center, transparent 0 38%, #15100d7d 72%, #050302bf 94%); mix-blend-mode: normal; }
-.room-haze i { position: absolute; width: 62vw; height: 35vh; border-radius: 50%; background: radial-gradient(ellipse, #e6d6c024 0, #b19d8611 42%, transparent 72%); filter: blur(25px); animation: smoke-drift 12s ease-in-out infinite alternate; }
-.room-haze i:nth-child(1) { left: -4%; top: 15%; }
-.room-haze i:nth-child(2) { right: -8%; top: 36%; animation-delay: -4s; animation-duration: 15s; }
-.room-haze i:nth-child(3) { left: 20%; bottom: 0; animation-delay: -8s; animation-duration: 18s; }
+.smoke-canvas {
+  position: fixed;
+  z-index: 16;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
 
 button:focus-visible, input:focus-visible { outline: 3px solid #b7904d; outline-offset: 3px; }
 
@@ -513,7 +582,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid #b7904d; outline-
 @keyframes dock-spin { to { transform: rotate(360deg); } }
 @keyframes dock-up { from { opacity: 0; transform: translateY(8px); } }
 @keyframes machine-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-@keyframes smoke-drift { from { transform: translate(-3%, -4%) scale(.9); opacity: .42; } to { transform: translate(7%, 6%) scale(1.17); opacity: .76; } }
+@keyframes story-enter { from { opacity: 0; transform: translateY(-48%) translateX(-12px) rotate(-.35deg); } }
 
 @media (max-width: 1050px) {
   .arrival-lockup { width: min(370px, 43vw); }
@@ -534,6 +603,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid #b7904d; outline-
   .maker-plate { margin-inline: 24px; }
   .step-back { top: 58px; left: 12px; }
   .music-dock { bottom: 64px; width: min(420px, calc(100vw - 24px)); left: 12px; }
+  .about-panel { left: 18px; }
 }
 
 @media (max-width: 560px) {
@@ -545,6 +615,8 @@ button:focus-visible, input:focus-visible { outline: 3px solid #b7904d; outline-
   .arrival-logo { padding-bottom: 8px; }
   .arrival-logo h1 { font-size: 2.05rem; }
   .arrival-actions { margin-top: 10px; grid-template-columns: 1fr auto; }
+  .about-panel { top: 78px; left: 10px; width: calc(100vw - 20px); max-height: calc(100svh - 146px); transform: none; }
+  .about-photo { height: 145px; }
   .look-controls { width: calc(100vw - 16px); bottom: 8px; }
   .look-controls button { flex: 1; padding-inline: 5px; }
   .jukebox-zone { padding: 100px 4px 140px; }

@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SmokeCanvas } from "@/components/SmokeCanvas";
+import { useMood } from "@/lib/mood";
 import type { Track } from "@/lib/tracks";
 
-type Mood = "clear" | "hazy";
-type LookDirection = "left" | "center" | "right";
 type Mechanism = "idle" | "selecting" | "playing" | "paused" | "rejected";
+type Mood = "clear" | "hazy";
 type RemoteState = "connecting" | "connected" | "disconnected";
+type RemoteEvent = "connecting" | "connect" | "disconnect";
 
 type AudioGraph = {
   context: AudioContext;
@@ -21,8 +23,8 @@ type RemotePlaybackHandle = {
   prompt: () => Promise<void>;
   watchAvailability?: (callback: (available: boolean) => void) => Promise<number>;
   cancelWatchAvailability?: (callbackId: number) => void;
-  addEventListener: (name: RemoteState, listener: EventListener) => void;
-  removeEventListener: (name: RemoteState, listener: EventListener) => void;
+  addEventListener: (name: RemoteEvent, listener: EventListener) => void;
+  removeEventListener: (name: RemoteEvent, listener: EventListener) => void;
 };
 
 type CastableAudio = HTMLAudioElement & { remote?: RemotePlaybackHandle };
@@ -59,11 +61,12 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
   const movementTimerRef = useRef<number | null>(null);
   const loaded = useMemo(() => tracks.filter((track) => track.audio), [tracks]);
   const firstTrack = loaded[0] ?? tracks[0];
+  const { isHazeActive, smokeDensity, currentView: look, toggleHaze, setView: setLook } = useMood();
+  const mood = isHazeActive ? "hazy" : "clear";
 
   const [approached, setApproached] = useState(false);
   const [walking, setWalking] = useState(false);
-  const [mood, setMood] = useState<Mood>("clear");
-  const [look, setLook] = useState<LookDirection>("center");
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<Track>(firstTrack);
   const [activeTrack, setActiveTrack] = useState<Track>(firstTrack);
@@ -85,6 +88,11 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
   const mechanismTrack = playing ? activeTrack : selected.audio ? selected : activeTrack;
   const selectedIsActive = selected.code === activeTrack.code;
   const showMusicDock = playing || elapsed > 0;
+  const sceneImage = look === "left"
+    ? "/images/alley-cat-pool-room.webp"
+    : look === "right"
+      ? "/images/alley-cat-signed-wall.webp"
+      : "/images/intro-screen.png";
 
   useEffect(() => {
     return () => {
@@ -116,8 +124,8 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
     setRemoteState(remote.state);
     const syncState = () => setRemoteState(remote.state);
     remote.addEventListener("connecting", syncState);
-    remote.addEventListener("connected", syncState);
-    remote.addEventListener("disconnected", syncState);
+    remote.addEventListener("connect", syncState);
+    remote.addEventListener("disconnect", syncState);
 
     let watchId: number | undefined;
     void remote.watchAvailability?.((available) => setRemoteAvailable(available))
@@ -126,8 +134,8 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
 
     return () => {
       remote.removeEventListener("connecting", syncState);
-      remote.removeEventListener("connected", syncState);
-      remote.removeEventListener("disconnected", syncState);
+      remote.removeEventListener("connect", syncState);
+      remote.removeEventListener("disconnect", syncState);
       if (watchId !== undefined) remote.cancelWatchAvailability?.(watchId);
     };
   }, []);
@@ -176,8 +184,8 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
   }
 
   async function toggleMood() {
-    const nextMood = mood === "clear" ? "hazy" : "clear";
-    setMood(nextMood);
+    const nextMood = isHazeActive ? "clear" : "hazy";
+    toggleHaze();
     await applyMoodSound(nextMood);
   }
 
@@ -288,12 +296,12 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
   return (
     <main className={`bar-room look-${look} ${approached ? "approached" : "standing-back"} ${walking ? "camera-moving" : ""} mood-${mood} ${playing ? "music-playing" : ""}`}>
       <div className="scene-backdrop" aria-hidden="true">
-        <Image src="/images/intro-screen.png" alt="" fill priority sizes="100vw" />
+        <Image key={sceneImage} src={sceneImage} alt="" fill priority sizes="100vw" />
       </div>
       <div className="room-shade" aria-hidden="true" />
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
-      {mood === "hazy" && <div className="room-haze" aria-hidden="true"><i /><i /><i /></div>}
+      <SmokeCanvas smokeDensity={smokeDensity} />
 
       <div className="bar-location"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
 
@@ -310,8 +318,21 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
             <button className="step-up" onClick={() => moveCamera(true)}>WALK UP &amp; PICK A SONG <b>→</b></button>
             <button className="arrival-smoke" onClick={() => void toggleMood()}>{mood === "hazy" ? "CLEAR THE AIR" : "LIGHT ONE UP"}</button>
           </div>
+          <button className="about-trigger" onClick={() => setAboutOpen(true)}>ABOUT THE CAT · 6267 CARROLLTON AVE</button>
           <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
         </section>
+      )}
+
+      {aboutOpen && (
+        <aside className="about-panel" aria-label="About the Alley Cat Lounge">
+          <div className="about-photo"><Image src="/images/alley-cat-exterior.webp" alt="The alley entrance and illuminated Alley Cat Lounge sign" fill sizes="420px" /></div>
+          <span>ABOUT THE ALLEY CAT</span>
+          <h2>Broad Ripple&apos;s hole-in-the-wall since way back.</h2>
+          <p>Tucked away at 6267 Carrollton Ave, the Alley Cat Lounge is an Indianapolis dive-bar institution: strong affordable drinks, pool, arcade games, a jukebox, and absolutely no attitude.</p>
+          <p>No reservations. Walk in, grab a drink, find a booth, and see where the night takes you.</p>
+          <div><b>THE ORIGINAL BACK BAR</b><small>POOL · ARCADE · JUKEBOX · 7AM–3AM DAILY</small></div>
+          <button onClick={() => setAboutOpen(false)}>CLOSE &amp; GET BACK TO THE MUSIC</button>
+        </aside>
       )}
 
       <nav className="look-controls" aria-label="Look around the bar">
@@ -323,7 +344,8 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
       {look !== "center" && (
         <aside className={`bar-story story-${look}`} aria-live="polite">
           <span>{look === "left" ? "AT THE BAR" : "SCRATCHED INTO THE WALL"}</span>
-          <p>{look === "left" ? "A crooked eight-ball, two mystery keys, and a jar marked “retirement fund.” Nobody knows whose retirement." : "Forty years of initials, bad poetry, and one warning: DON’T PLAY FREE BIRD BEFORE CLOSING."}</p>
+          <p>{look === "left" ? "The original back bar: pool tables, wood paneling, cheap drinks, and the kind of room that never needed to be reinvented." : "Forty years of initials, bad poetry, questionable drawings, and one warning: DON’T PLAY FREE BIRD BEFORE CLOSING."}</p>
+          {look === "right" && <div className="story-photo"><Image src="/images/alley-cat-graffiti-alley.webp" alt="The mural-covered alley outside the Alley Cat Lounge" fill sizes="360px" /></div>}
           <button onClick={() => setLook("center")}>TURN BACK TO THE MUSIC</button>
         </aside>
       )}
