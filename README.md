@@ -54,6 +54,8 @@ The five recordings are public, versioned MP3 assets in Cloudinary cloud `dr0xs4
 
 The UI uses React 19, the Next.js 16 App Router, fully typed TypeScript, Tailwind CSS v4 semantic theme tokens, a global React 19 mood context, native Canvas 2D smoke rendering, and the native Web Audio API. No animation framework is shipped.
 
+`app/page.tsx` remains a Server Component and wraps the complete experience in `MoodProvider`. The client-side `JukeboxStage` is the integration master: it supplies the smoke as the atmosphere slot and the coaster as the foreground slot without moving or remounting the jukebox audio element. The rendered stack is explicitly ordered as authentic room photo, smoke, mechanical cabinet, then interactive controls and coaster.
+
 ## Deploy
 
 The app is a static Next.js 16 App Router page and can be imported directly into Vercel from GitHub. No runtime environment variables are required.

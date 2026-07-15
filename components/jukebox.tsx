@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { AudioEmber } from "@/components/AudioEmber";
-import { BarPhilosophy } from "@/components/BarPhilosophy";
-import { SmokeCanvas } from "@/components/SmokeCanvas";
 import { useMood } from "@/lib/mood";
 import type { Track } from "@/lib/tracks";
 
@@ -34,6 +33,12 @@ type CastableAudio = HTMLAudioElement & { remote?: RemotePlaybackHandle };
 
 const pageLetters = "ABCDEFGHIJKL".split("");
 
+interface JukeboxProps {
+  tracks: Track[];
+  atmosphereLayer?: ReactNode;
+  foregroundLayer?: ReactNode;
+}
+
 function wait(milliseconds: number) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
@@ -58,13 +63,13 @@ function buildImpulseResponse(context: AudioContext) {
   return impulse;
 }
 
-export function Jukebox({ tracks }: { tracks: Track[] }) {
+export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioGraphRef = useRef<AudioGraph | null>(null);
   const movementTimerRef = useRef<number | null>(null);
   const loaded = useMemo(() => tracks.filter((track) => track.audio), [tracks]);
   const firstTrack = loaded[0] ?? tracks[0];
-  const { isHazeActive, smokeDensity, currentView: look, toggleHaze, setView: setLook } = useMood();
+  const { isHazeActive, currentView: look, toggleHaze, setView: setLook } = useMood();
   const mood = isHazeActive ? "hazy" : "clear";
 
   const [approached, setApproached] = useState(false);
@@ -189,7 +194,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
     graph.lowpass.frequency.setTargetAtTime(nextMood === "hazy" ? 2750 : 5600, graph.context.currentTime, 0.08);
   }
 
-  async function toggleMood() {
+  async function handleHazeToggle() {
     const nextMood = isHazeActive ? "clear" : "hazy";
     toggleHaze();
     await applyMoodSound(nextMood);
@@ -301,18 +306,20 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
 
   return (
     <main className={`bar-room look-${look} ${approached ? "approached" : "standing-back"} ${walking ? "camera-moving" : ""} mood-${mood} ${playing ? "music-playing" : ""}`}>
-      <div className="scene-backdrop" aria-hidden="true">
+      <div className="scene-backdrop" data-layer="0-background" aria-hidden="true">
         <Image key={sceneImage} src={sceneImage} alt="" fill priority sizes="100vw" />
       </div>
       <div className="room-shade" aria-hidden="true" />
+      <div className="stage-atmosphere absolute inset-0 z-[5] h-full w-full pointer-events-none" data-layer="1-atmosphere" aria-hidden="true">
+        {atmosphereLayer}
+      </div>
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
-      <SmokeCanvas smokeDensity={smokeDensity} />
 
-      <div className="bar-location"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
+      <div className="bar-location" data-layer="3-controls"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
 
       {!approached && look === "center" && (
-        <section className="arrival-lockup" aria-label="Enter Jeffrey's listening room">
+        <section className="arrival-lockup" data-layer="3-controls" aria-label="Enter Jeffrey's listening room">
           <div className="arrival-logo">
             <span>PRIVATE PRESSINGS</span>
             <h1>JEFFREY&apos;S</h1>
@@ -322,7 +329,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
           <p>Five Jeffrey Taylor originals. One old machine. Your stool is still open.</p>
           <div className="arrival-actions">
             <button className="step-up" onClick={() => moveCamera(true)}>WALK UP &amp; PICK A SONG <b>→</b></button>
-            <button className="arrival-smoke" onClick={() => void toggleMood()}>{mood === "hazy" ? "CLEAR THE AIR" : "LIGHT ONE UP"}</button>
+            <button className="arrival-smoke" onClick={() => void handleHazeToggle()}>{mood === "hazy" ? "CLEAR THE AIR" : "LIGHT ONE UP"}</button>
           </div>
           <button className="about-trigger" onClick={() => setAboutOpen(true)}>ABOUT THE CAT · 6267 CARROLLTON AVE</button>
           <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
@@ -341,13 +348,15 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
         </aside>
       )}
 
-      <nav className="look-controls" aria-label="Look around the bar">
+      <nav className="look-controls" data-layer="3-controls" aria-label="Look around the bar">
         <button onClick={() => setLook("left")} className={look === "left" ? "active" : ""}>← BAR</button>
         <button onClick={() => setLook("center")} className={look === "center" ? "active" : ""}>JUKEBOX</button>
         <button onClick={() => setLook("right")} className={look === "right" ? "active" : ""}>WALL →</button>
       </nav>
 
-      <BarPhilosophy />
+      <div className="contents" data-layer="3-foreground">
+        {foregroundLayer}
+      </div>
 
       {look !== "center" && (
         <aside className={`bar-story story-${look}`} aria-live="polite">
@@ -358,7 +367,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
         </aside>
       )}
 
-      <section className="jukebox-zone" aria-label="Darling Juke Joint Works jukebox">
+      <section className="jukebox-zone" data-layer="2-jukebox" aria-label="Darling Juke Joint Works jukebox">
         <div className={`cabinet mechanism-${mechanism}`}>
           <div className="cabinet-glow" aria-hidden="true" />
           <div className="cabinet-scratches" aria-hidden="true" />
@@ -416,7 +425,7 @@ export function Jukebox({ tracks }: { tracks: Track[] }) {
               </div>
               <label className="volume-control"><span>VOLUME</span><input type="range" min="0" max="1" step="0.05" value={volume} onChange={(event) => setVolume(Number(event.target.value))} /></label>
               <div className="machine-actions">
-                <button className={`smoke-switch ${mood === "hazy" ? "lit" : ""}`} onClick={() => void toggleMood()}>{mood === "hazy" ? "CLEAR AIR" : "HAZE"}</button>
+                <button className={`smoke-switch ${mood === "hazy" ? "lit" : ""}`} onClick={() => void handleHazeToggle()}>{mood === "hazy" ? "CLEAR AIR" : "HAZE"}</button>
                 {remoteSupported && <button className={`cast-button state-${remoteState}`} onClick={() => void promptRemotePlayback()} disabled={!remoteAvailable && remoteState === "disconnected"}>{remoteState === "connected" ? "ON DEVICE" : "PLAY ON TV"}</button>}
               </div>
             </section>
