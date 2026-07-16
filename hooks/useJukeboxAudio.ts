@@ -6,7 +6,7 @@ import type { Track } from "@/lib/tracks";
 import { playNeedleScratch } from "@/lib/scratchSound";
 
 export type Mechanism = "idle" | "selecting" | "playing" | "paused" | "rejected";
-export type Mood = "clear" | "hazy";
+export type Mood = "inside" | "outside";
 
 export type AudioGraph = {
   context: AudioContext;
@@ -106,9 +106,9 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
     if (!graph) return;
     if (graph.context.state === "suspended") await graph.context.resume();
 
-    graph.dryGain.gain.setTargetAtTime(nextMood === "hazy" ? 0.82 : 1, graph.context.currentTime, 0.08);
-    graph.wetGain.gain.setTargetAtTime(nextMood === "hazy" ? 0.2 : 0, graph.context.currentTime, 0.08);
-    graph.lowpass.frequency.setTargetAtTime(nextMood === "hazy" ? 2750 : 5600, graph.context.currentTime, 0.08);
+    graph.dryGain.gain.setTargetAtTime(nextMood === "outside" ? 0.82 : 1, graph.context.currentTime, 0.08);
+    graph.wetGain.gain.setTargetAtTime(nextMood === "outside" ? 0.2 : 0, graph.context.currentTime, 0.08);
+    graph.lowpass.frequency.setTargetAtTime(nextMood === "outside" ? 2750 : 5600, graph.context.currentTime, 0.08);
   }, [ensureAudioGraph]);
 
   const chooseTrack = useCallback((track: Track) => {

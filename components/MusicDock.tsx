@@ -15,7 +15,7 @@ interface MusicDockProps {
   duration: number;
   remoteState: string;
   remoteSupported: boolean;
-  isHazeActive: boolean;
+  isOutside: boolean;
   onTogglePlayback: () => void;
   onPromptRemote: () => void;
 }
@@ -27,12 +27,12 @@ export function MusicDock({
   duration,
   remoteState,
   remoteSupported,
-  isHazeActive,
+  isOutside,
   onTogglePlayback,
   onPromptRemote,
 }: MusicDockProps) {
   const tabPrice = activeTrack.audio ? "FREE (VIP)" : "10¢";
-  const tabMood = isHazeActive ? "1 Cold Beer & 3 Smokes" : "1 Cold Beer";
+  const tabMood = isOutside ? "1 Cold Beer & Alley Air" : "1 Cold Beer";
 
   return (
     <section className="music-dock bar-tab" aria-label="Persistent music controls">

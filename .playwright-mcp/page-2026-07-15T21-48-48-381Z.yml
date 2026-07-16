@@ -1,0 +1,185 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: THE ALLEY CAT
+      - generic [ref=e7]: INDIANAPOLIS · BACK ROOM
+    - navigation "Look around the bar" [ref=e22]:
+      - button "← POOL ROOM" [ref=e23] [cursor=pointer]
+      - button "JUKEBOX" [ref=e24] [cursor=pointer]
+      - button "SIGNED WALL →" [ref=e25] [cursor=pointer]
+    - button "Read some bar philosophy from the coaster" [ref=e333] [cursor=pointer]:
+      - generic [ref=e335]:
+        - text: AlleyCat
+        - generic [ref=e337]: Table Wisdom
+    - complementary [ref=e338]:
+      - text: THE BACK ROOM
+      - paragraph [ref=e339]: "The original back bar: pool tables, wood paneling, cheap drinks, and the kind of room that never needed to be reinvented."
+      - button "TURN BACK TO THE MUSIC" [ref=e340] [cursor=pointer]
+    - region "Darling Juke Joint Works jukebox":
+      - generic:
+        - generic: ALLEYCAT
+        - generic: NOREQUESTS
+        - generic: SERVICEDBY JACOB
+        - generic:
+          - generic: ♪
+          - generic:
+            - generic: DARLING JUKE JOINT WORKS · No. 85
+            - heading "JEFFREY'S" [level=2]
+            - text: PRIVATE PRESSINGS
+          - generic: 10¢
+        - generic:
+          - region "Song title catalog":
+            - generic:
+              - strong: NOW PLAYING · C7
+            - generic:
+              - generic:
+                - generic: C1–C10
+                - button "C1 Closing Time Again Meridian Line Last Rounds":
+                  - generic: C1
+                  - generic:
+                    - strong: Closing Time Again
+                    - generic: Meridian Line Last Rounds
+                - button "C2 Two Beers Regular June Bell & the Late Shifts":
+                  - generic: C2
+                  - generic:
+                    - strong: Two Beers Regular
+                    - generic: June Bell & the Late Shifts
+                - button "C3 Blue Collar Halo The House Regulars":
+                  - generic: C3
+                  - generic:
+                    - strong: Blue Collar Halo
+                    - generic: The House Regulars
+                - button "C4 Last Call Past Midnight Carrollton Ave Loose Change":
+                  - generic: C4
+                  - generic:
+                    - strong: Last Call Past Midnight
+                    - generic: Carrollton Ave Loose Change
+                - button "C5 Neon for the Road Walt Mercer & the Saints":
+                  - generic: C5
+                  - generic:
+                    - strong: Neon for the Road
+                    - generic: Walt Mercer & the Saints
+                - button "C6 Quarter in the Machine Confidential The Mile Marker Side Streets":
+                  - generic: C6
+                  - generic:
+                    - strong: Quarter in the Machine Confidential
+                    - generic: The Mile Marker Side Streets
+                - button "C7 Last Call Waltz Jeffrey Taylor JT":
+                  - generic: C7
+                  - generic:
+                    - strong: Last Call Waltz
+                    - generic: Jeffrey Taylor
+                  - generic "Jeffrey's recording": JT
+                - button "C8 Tavern Window Promises The Alley Cat Low Notes":
+                  - generic: C8
+                  - generic:
+                    - strong: Tavern Window Promises
+                    - generic: The Alley Cat Low Notes
+                - button "C9 Friday Night Till Closing The Turnaround Kings":
+                  - generic: C9
+                  - generic:
+                    - strong: Friday Night Till Closing
+                    - generic: The Turnaround Kings
+                - button "C10 Cigarette Sunrise Lullaby Cal Porter's Closing Crew":
+                  - generic: C10
+                  - generic:
+                    - strong: Cigarette Sunrise Lullaby
+                    - generic: Cal Porter's Closing Crew
+              - generic:
+                - generic: D1–D10
+                - button "D1 One More Heartache The Back Booth Old Roads":
+                  - generic: D1
+                  - generic:
+                    - strong: One More Heartache
+                    - generic: The Back Booth Old Roads
+                - button "D2 Pool Table on the Sign The County Night Owls":
+                  - generic: D2
+                  - generic:
+                    - strong: Pool Table on the Sign
+                    - generic: The County Night Owls
+                - button "D3 Whiskey Over Main Street Martha Grey & the Last Rounds":
+                  - generic: D3
+                  - generic:
+                    - strong: Whiskey Over Main Street
+                    - generic: Martha Grey & the Last Rounds
+                - button "D4 Back Booth Static Broad Ripple Late Shifts":
+                  - generic: D4
+                  - generic:
+                    - strong: Back Booth Static
+                    - generic: Broad Ripple Late Shifts
+                - button "D5 Small Town Dust The Ashtray Regulars":
+                  - generic: D5
+                  - generic:
+                    - strong: Small Town Dust
+                    - generic: The Ashtray Regulars
+                - button "D6 Chrome and Walnut Home Eddie Vale's Loose Change":
+                  - generic: D6
+                  - generic:
+                    - strong: Chrome and Walnut Home
+                    - generic: Eddie Vale's Loose Change
+                - button "D7 Barstool Philosophy The Brass Saints":
+                  - generic: D7
+                  - generic:
+                    - strong: Barstool Philosophy
+                    - generic: The Brass Saints
+                - button "D8 Sunday Morning Waltz Meridian Line Side Streets":
+                  - generic: D8
+                  - generic:
+                    - strong: Sunday Morning Waltz
+                    - generic: Meridian Line Side Streets
+                - button "D9 Dime Store Rain June Bell & the Lines":
+                  - generic: D9
+                  - generic:
+                    - strong: Dime Store Rain
+                    - generic: June Bell & the Lines
+                - button "D10 Corner Booth Tab The House Low Notes":
+                  - generic: D10
+                  - generic:
+                    - strong: Corner Booth Tab
+                    - generic: The House Low Notes
+            - generic:
+              - button "◀ BACK"
+              - generic: 120 TITLES · 5 JEFFREY CUTS
+              - button "NEXT ▶"
+          - region "Visible record mechanism":
+            - generic:
+              - generic:
+                - generic: JT
+                - strong: C7
+                - generic: 45 RPM
+            - generic: AUTOMATIC CHANGER · SERVICED WHENEVER JACOB REMEMBERS
+          - region "Playback controls":
+            - generic:
+              - generic: NOW SPINNING
+              - strong: C7 · Last Call Waltz
+              - generic: Jeffrey Taylor
+            - generic:
+              - button "Previous Jeffrey recording": ◀
+              - button "PAUSE"
+              - button "Next Jeffrey recording": ▶
+            - generic:
+              - generic: VOLUME
+              - slider "VOLUME": "0.8"
+            - generic:
+              - button "Step outside into the alley":
+                - generic: STEP OUTSIDE
+              - button "PLAY ON TV" [disabled]
+        - generic:
+          - generic: DARLING JUKE JOINT WORKS
+          - generic: INDIANA · EST. 1985
+          - generic: S/N JEFF-TAYLOR-001
+    - button "← STEP BACK FROM THE MACHINE" [ref=e201] [cursor=pointer]
+    - generic [ref=e26]: INSIDE · BACK ROOM
+    - region "Persistent music controls" [ref=e205]:
+      - generic [ref=e206]: C7
+      - generic [ref=e208]:
+        - generic [ref=e209]: NOW PLAYING
+        - strong [ref=e210]: Last Call Waltz
+        - generic [ref=e211]: Jeffrey Taylor
+      - generic [ref=e212]: 0:18 / 3:47
+      - button "Pause current song" [ref=e224] [cursor=pointer]: Ⅱ
+      - button "Play on a compatible TV or speaker" [ref=e215] [cursor=pointer]: ▣
+      - generic [ref=e216]:
+        - generic [ref=e217]: C7 · FREE (VIP)
+        - generic [ref=e218]: "Current Tab: 1 Cold Beer"
+  - alert [ref=e27]

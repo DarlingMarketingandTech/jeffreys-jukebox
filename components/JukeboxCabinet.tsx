@@ -2,7 +2,9 @@
 
 import type { Mechanism } from "@/hooks/useJukeboxAudio";
 import type { Track } from "@/lib/tracks";
-import { HazeLighter } from "@/components/HazeLighter";
+import { DoorSwitch } from "@/components/DoorSwitch";
+import { VuMeter } from "@/components/VuMeter";
+import { useCabinetTilt } from "@/hooks/useCabinetTilt";
 
 interface JukeboxCabinetProps {
   mechanism: Mechanism;
@@ -17,7 +19,8 @@ interface JukeboxCabinetProps {
   playing: boolean;
   selectedIsActive: boolean;
   volume: number;
-  mood: "clear" | "hazy";
+  mood: "inside" | "outside";
+  analyserNode: AnalyserNode | null;
   remoteSupported: boolean;
   remoteAvailable: boolean;
   remoteState: string;
@@ -26,7 +29,7 @@ interface JukeboxCabinetProps {
   onMoveLoaded: (direction: number) => void;
   onMainPlay: () => void;
   onVolumeChange: (volume: number) => void;
-  onHazeToggle: () => void;
+  onViewToggle: () => void;
   onPromptRemote: () => void;
 }
 
@@ -44,6 +47,7 @@ export function JukeboxCabinet({
   selectedIsActive,
   volume,
   mood,
+  analyserNode,
   remoteSupported,
   remoteAvailable,
   remoteState,
@@ -52,12 +56,18 @@ export function JukeboxCabinet({
   onMoveLoaded,
   onMainPlay,
   onVolumeChange,
-  onHazeToggle,
+  onViewToggle,
   onPromptRemote,
 }: JukeboxCabinetProps) {
+  const stageRef = useCabinetTilt<HTMLDivElement>();
+
   return (
     <section className="jukebox-zone" data-layer="2-jukebox" aria-label="Darling Juke Joint Works jukebox">
+      <div className="cabinet-stage" ref={stageRef}>
       <div className={`cabinet mechanism-${mechanism}`}>
+        <div className="cabinet-depth cabinet-depth-left" aria-hidden="true" />
+        <div className="cabinet-depth cabinet-depth-right" aria-hidden="true" />
+        <div className="cabinet-underglow" aria-hidden="true" />
         <div className="cabinet-glow" aria-hidden="true" />
         <div className="cabinet-scratches" aria-hidden="true" />
         <span className="cabinet-sticker sticker-one" aria-hidden="true">ALLEY<br />CAT</span>
@@ -66,7 +76,7 @@ export function JukeboxCabinet({
           SERVICED<br />BY JACOB
         </span>
         <header className="machine-marquee">
-          <span className="marquee-note">♪</span>
+          <span className="speaker-grille grille-left" aria-hidden="true"><i /><i /></span>
           <div>
             <small>DARLING JUKE JOINT WORKS · No. 85</small>
             <h2>
@@ -74,11 +84,12 @@ export function JukeboxCabinet({
             </h2>
             <b>PRIVATE PRESSINGS</b>
           </div>
-          <span className="coin-badge">10¢</span>
+          <span className="speaker-grille grille-right" aria-hidden="true"><i /><i /></span>
         </header>
 
         <div className="machine-body">
           <section className="catalog" aria-label="Song title catalog">
+            <div className="canopy-lamps" aria-hidden="true"><i /><i /></div>
             <div className="catalog-topline">
               <span>SELECT A RECORD</span>
               <strong>{message}</strong>
@@ -110,6 +121,7 @@ export function JukeboxCabinet({
               <span>120 TITLES · 5 JEFFREY CUTS</span>
               <button onClick={() => onTurnPage(1)} disabled={page >= 10}>NEXT ▶</button>
             </div>
+            <div className="catalog-glass" aria-hidden="true" />
           </section>
 
           <section className="mechanism-window" aria-label="Visible record mechanism">
@@ -140,6 +152,7 @@ export function JukeboxCabinet({
               </button>
               <button onClick={() => void onMoveLoaded(1)} aria-label="Next Jeffrey recording">▶</button>
             </div>
+            <VuMeter analyser={analyserNode} playing={playing} />
             <label className="volume-control">
               <span>VOLUME</span>
               <input
@@ -152,11 +165,11 @@ export function JukeboxCabinet({
               />
             </label>
             <div className="machine-actions">
-              <HazeLighter
-                isLit={mood === "hazy"}
-                label={mood === "hazy" ? "CLEAR AIR" : "HAZE"}
-                className="cabinet-lighter"
-                onToggle={onHazeToggle}
+              <DoorSwitch
+                isOutside={mood === "outside"}
+                label={mood === "outside" ? "STEP INSIDE" : "STEP OUTSIDE"}
+                className="cabinet-door-switch"
+                onToggle={onViewToggle}
               />
               {remoteSupported && (
                 <button
@@ -176,6 +189,7 @@ export function JukeboxCabinet({
           <span>INDIANA · EST. 1985</span>
           <small>S/N JEFF-TAYLOR-001</small>
         </footer>
+      </div>
       </div>
     </section>
   );

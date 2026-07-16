@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { highThoughts, soberThoughts } from "@/lib/highThoughts";
-import { useMood } from "@/lib/mood";
 
 function nextThoughtIndex(length: number, currentIndex: number) {
   if (length < 2) return 0;
@@ -10,19 +9,24 @@ function nextThoughtIndex(length: number, currentIndex: number) {
   return (currentIndex + offset) % length;
 }
 
-export function BarPhilosophy() {
-  const { isHazeActive, currentView } = useMood();
+interface BarPhilosophyProps {
+  look: "left" | "center" | "right";
+  isOutside: boolean;
+}
+
+export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [thoughtIndex, setThoughtIndex] = useState(0);
-  const thoughts = isHazeActive ? highThoughts : soberThoughts;
+  const thoughts = isOutside ? highThoughts : soberThoughts;
+  const visible = isOutside || look !== "center";
 
   useEffect(() => {
     setThoughtIndex(0);
-  }, [isHazeActive]);
+  }, [isOutside]);
 
   useEffect(() => {
-    if (currentView === "center") setIsOpen(false);
-  }, [currentView]);
+    if (!visible) setIsOpen(false);
+  }, [visible]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -33,18 +37,18 @@ export function BarPhilosophy() {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [isOpen]);
 
-  if (currentView === "center") return null;
+  if (!visible) return null;
 
   const currentThought = thoughts[thoughtIndex % thoughts.length];
-  const anchorClass = currentView === "left" ? "coaster-anchor-left" : "coaster-anchor-right";
+  const anchorClass = look === "left" ? "coaster-anchor-left" : "coaster-anchor-right";
 
   return (
     <div className={`coaster-anchor ${anchorClass}`}>
       <button
         type="button"
-        className={`coaster-button ${isHazeActive ? "coaster-button-hazy" : ""}`}
+        className={`coaster-button ${isOutside ? "coaster-button-outside" : ""}`}
         onClick={() => setIsOpen(true)}
-        aria-label={isHazeActive ? "Read a high thought from the glowing coaster" : "Read some bar philosophy from the coaster"}
+        aria-label={isOutside ? "Read an alley thought from the glowing coaster" : "Read some bar philosophy from the coaster"}
         aria-haspopup="dialog"
       >
         <span className="coaster-button-ring" aria-hidden="true" />
@@ -58,8 +62,8 @@ export function BarPhilosophy() {
         <section
           role="dialog"
           aria-modal="false"
-          aria-label={isHazeActive ? "High thought" : "Bar philosophy"}
-          className={`coaster-dialog torn-napkin ${isHazeActive ? "coaster-dialog-hazy" : ""}`}
+          aria-label={isOutside ? "Alley thought" : "Bar philosophy"}
+          className={`coaster-dialog torn-napkin ${isOutside ? "coaster-dialog-outside" : ""}`}
         >
           <button
             type="button"
@@ -71,7 +75,7 @@ export function BarPhilosophy() {
           </button>
 
           <div className="coaster-dialog-header">
-            <span>{isHazeActive ? "HIGH THOUGHT No." : "BAR NOTE No."} {String(thoughtIndex + 1).padStart(2, "0")}</span>
+            <span>{isOutside ? "ALLEY THOUGHT No." : "BAR NOTE No."} {String(thoughtIndex + 1).padStart(2, "0")}</span>
             <span>6267 CARROLLTON</span>
           </div>
 

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
-import { HazeLighter } from "@/components/HazeLighter";
+import { BarPhilosophy } from "@/components/BarPhilosophy";
+import { DoorSwitch } from "@/components/DoorSwitch";
+import { FlickeringNeon } from "@/components/FlickeringNeon";
 import { JukeboxCabinet } from "@/components/JukeboxCabinet";
 import { MusicDock } from "@/components/MusicDock";
 import { useJukeboxAudio } from "@/hooks/useJukeboxAudio";
@@ -15,48 +16,50 @@ const pageLetters = "ABCDEFGHIJKL".split("");
 
 interface JukeboxProps {
   tracks: Track[];
-  atmosphereLayer?: ReactNode;
-  foregroundLayer?: ReactNode;
 }
 
-export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxProps) {
+export function Jukebox({ tracks }: JukeboxProps) {
   const movementTimerRef = useRef<number | null>(null);
-  const hazeSettledTimerRef = useRef<number | null>(null);
-  const { isHazeActive, currentView: look, toggleHaze, setView: setLook } = useMood();
-  const mood = isHazeActive ? "hazy" : "clear";
+  const outsideSettledTimerRef = useRef<number | null>(null);
+  const { currentView, setView } = useMood();
+  const mood = currentView;
+  const isOutside = currentView === "outside";
 
+  const [look, setLook] = useState<"left" | "center" | "right">("center");
   const [approached, setApproached] = useState(false);
   const [walking, setWalking] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [hazeSettled, setHazeSettled] = useState(false);
+  const [outsideSettled, setOutsideSettled] = useState(false);
 
   const audio = useJukeboxAudio({ tracks, mood, pageLetters });
   const { remoteSupported, remoteAvailable, remoteState, promptRemotePlayback } = useRemotePlayback(audio.audioRef);
 
-  const sceneImage = look === "left"
-    ? "/images/alley-cat-pool-room.webp"
-    : look === "right"
-      ? "/images/alley-cat-signed-wall.webp"
-      : "/images/intro-screen.png";
+  const sceneImage = isOutside
+    ? "/images/Alley-Cat-outside.jpg"
+    : look === "left"
+      ? "/images/alley-cat-pool-room.webp"
+      : look === "right"
+        ? "/images/alley-cat-signed-wall.webp"
+        : "/images/alley-cat-bar.webp";
 
   useEffect(() => {
     return () => {
       if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
-      if (hazeSettledTimerRef.current) window.clearTimeout(hazeSettledTimerRef.current);
+      if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
     };
   }, []);
 
   useEffect(() => {
-    if (hazeSettledTimerRef.current) window.clearTimeout(hazeSettledTimerRef.current);
-    if (!isHazeActive) {
-      setHazeSettled(false);
+    if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
+    if (currentView !== "outside") {
+      setOutsideSettled(false);
       return;
     }
-    hazeSettledTimerRef.current = window.setTimeout(() => setHazeSettled(true), 5 * 60 * 1000);
+    outsideSettledTimerRef.current = window.setTimeout(() => setOutsideSettled(true), 5 * 60 * 1000);
     return () => {
-      if (hazeSettledTimerRef.current) window.clearTimeout(hazeSettledTimerRef.current);
+      if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
     };
-  }, [isHazeActive]);
+  }, [currentView]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
@@ -68,8 +71,12 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
     });
     navigator.mediaSession.playbackState = audio.playing ? "playing" : "paused";
 
-    const handlePlay = () => { void audio.toggleActivePlayback(); };
-    const handlePause = () => { void audio.toggleActivePlayback(); };
+    const handlePlay = () => {
+      if (audio.audioRef.current?.paused) void audio.toggleActivePlayback();
+    };
+    const handlePause = () => {
+      if (audio.audioRef.current && !audio.audioRef.current.paused) void audio.toggleActivePlayback();
+    };
     const handlePrevious = () => { void audio.moveLoaded(-1); };
     const handleNext = () => { void audio.moveLoaded(1); };
 
@@ -102,10 +109,11 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
     movementTimerRef.current = window.setTimeout(() => setWalking(false), 1250);
   }
 
-  async function handleHazeToggle() {
-    const nextMood = isHazeActive ? "clear" : "hazy";
-    toggleHaze();
-    await audio.applyMoodSound(nextMood);
+  async function handleViewToggle() {
+    const nextView = isOutside ? "inside" : "outside";
+    setLook("center");
+    setView(nextView);
+    await audio.applyMoodSound(nextView);
   }
 
   const roomClasses = [
@@ -114,9 +122,8 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
     approached ? "approached" : "standing-back",
     walking ? "camera-moving" : "",
     `mood-${mood}`,
-    audio.playing ? "music-playing" : "",
     audio.showMusicDock ? "has-music-dock" : "",
-    hazeSettled ? "lazy-drift" : "",
+    outsideSettled ? "lazy-drift" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -125,16 +132,13 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
         <Image key={sceneImage} src={sceneImage} alt="" fill priority sizes="100vw" />
       </div>
       <div className="room-shade" aria-hidden="true" />
-      <div className="room-haze" aria-hidden="true" />
-      <div className="stage-atmosphere" data-layer="1-atmosphere" aria-hidden="true">
-        {atmosphereLayer}
-      </div>
+      <div className="night-air" aria-hidden="true" />
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
 
       <div className="bar-location" data-layer="3-controls"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
 
-      {!approached && look === "center" && (
+      {!isOutside && !approached && look === "center" && (
         <section className="arrival-lockup" data-layer="3-controls" aria-label="Enter Jeffrey's listening room">
           <div className="arrival-logo">
             <span>PRIVATE PRESSINGS</span>
@@ -145,11 +149,11 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
           <p>Five Jeffrey Taylor originals. One old machine. Your stool is still open.</p>
           <div className="arrival-actions">
             <button className="step-up" onClick={() => moveCamera(true)}>WALK UP &amp; PICK A SONG <b>→</b></button>
-            <HazeLighter
-              isLit={mood === "hazy"}
-              label={mood === "hazy" ? "CLEAR THE AIR" : "LIGHT ONE UP"}
-              className="arrival-lighter"
-              onToggle={handleHazeToggle}
+            <DoorSwitch
+              isOutside={false}
+              label="STEP OUTSIDE"
+              className="arrival-door"
+              onToggle={handleViewToggle}
             />
           </div>
           <button className="about-trigger" onClick={() => setAboutOpen(true)}>ABOUT THE CAT · 6267 CARROLLTON AVE</button>
@@ -169,17 +173,35 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
         </aside>
       )}
 
-      <nav className="look-controls" data-layer="3-controls" aria-label="Look around the bar">
-        <button onClick={() => setLook("left")} className={look === "left" ? "active" : ""}>← POOL ROOM</button>
-        <button onClick={() => setLook("center")} className={look === "center" ? "active" : ""}>JUKEBOX</button>
-        <button onClick={() => setLook("right")} className={look === "right" ? "active" : ""}>SIGNED WALL →</button>
-      </nav>
+      {!isOutside && (
+        <nav className="look-controls" data-layer="3-controls" aria-label="Look around the bar">
+          <button onClick={() => setLook("left")} className={look === "left" ? "active" : ""}>← POOL ROOM</button>
+          <button onClick={() => setLook("center")} className={look === "center" ? "active" : ""}>JUKEBOX</button>
+          <button onClick={() => setLook("right")} className={look === "right" ? "active" : ""}>SIGNED WALL →</button>
+        </nav>
+      )}
 
-      <div className="contents" data-layer="3-foreground">
-        {foregroundLayer}
-      </div>
+      {isOutside && (
+        <section className="alley-scene" data-layer="3-controls" aria-label="Out back in the alley">
+          <FlickeringNeon text="ALLEY CAT" />
+          <div className="alley-note">
+            <span>OUT BACK · CARROLLTON AVE</span>
+            <p>{audio.playing
+              ? "The jukebox keeps working through the brick. You can just make out the melody."
+              : "Cold air, quiet alley. The machine is waiting on you inside."}</p>
+          </div>
+          <DoorSwitch
+            isOutside
+            label="HEAD BACK INSIDE"
+            className="alley-door"
+            onToggle={handleViewToggle}
+          />
+        </section>
+      )}
 
-      {look !== "center" && (
+      <BarPhilosophy look={look} isOutside={isOutside} />
+
+      {!isOutside && look !== "center" && (
         <aside className={`bar-story story-${look}`} aria-live="polite">
           <span>{look === "left" ? "THE BACK ROOM" : "SCRATCHED INTO THE WALL"}</span>
           <p>{look === "left"
@@ -204,6 +226,7 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
         selectedIsActive={audio.selectedIsActive}
         volume={audio.volume}
         mood={mood}
+        analyserNode={audio.analyserNode}
         remoteSupported={remoteSupported}
         remoteAvailable={remoteAvailable}
         remoteState={remoteState}
@@ -212,12 +235,12 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
         onMoveLoaded={(direction) => void audio.moveLoaded(direction)}
         onMainPlay={() => void audio.handleMainPlayButton()}
         onVolumeChange={audio.setVolume}
-        onHazeToggle={handleHazeToggle}
+        onViewToggle={() => void handleViewToggle()}
         onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
       />
 
-      {approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
-      <div className="smoke-status" aria-live="polite">{mood === "hazy" ? "ROOM: HAZY" : "ROOM: CLEAR ENOUGH"}</div>
+      {!isOutside && approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
+      <div className="room-status" aria-live="polite">{isOutside ? "OUT BACK · MUSIC THROUGH THE WALL" : "INSIDE · BACK ROOM"}</div>
 
       {audio.showMusicDock && (
         <MusicDock
@@ -227,8 +250,8 @@ export function Jukebox({ tracks, atmosphereLayer, foregroundLayer }: JukeboxPro
           duration={audio.duration}
           remoteState={remoteState}
           remoteSupported={remoteSupported}
-          isHazeActive={isHazeActive}
-          onTogglePlayback={audio.toggleActivePlayback}
+          isOutside={isOutside}
+          onTogglePlayback={() => void audio.toggleActivePlayback()}
           onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
         />
       )}

@@ -1,0 +1,175 @@
+- generic [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: THE ALLEY CAT
+      - generic [ref=e7]: INDIANAPOLIS · BACK ROOM
+    - navigation "Look around the bar" [ref=e22]:
+      - button "← POOL ROOM" [ref=e23] [cursor=pointer]
+      - button "JUKEBOX" [active] [ref=e24] [cursor=pointer]
+      - button "SIGNED WALL →" [ref=e25] [cursor=pointer]
+    - region "Darling Juke Joint Works jukebox" [ref=e28]:
+      - generic [ref=e29]:
+        - generic: ALLEYCAT
+        - generic: NOREQUESTS
+        - generic: SERVICEDBY JACOB
+        - generic [ref=e30]:
+          - generic [ref=e31]: ♪
+          - generic [ref=e32]:
+            - generic [ref=e33]: DARLING JUKE JOINT WORKS · No. 85
+            - heading "JEFFREY'S" [level=2] [ref=e34]
+            - text: PRIVATE PRESSINGS
+          - generic [ref=e35]: 10¢
+        - generic [ref=e36]:
+          - region "Song title catalog" [ref=e37]:
+            - strong [ref=e39]: PAUSED · C7
+            - generic [ref=e225]:
+              - generic [ref=e226]:
+                - generic [ref=e227]: C1–C10
+                - button "C1 Closing Time Again Meridian Line Last Rounds" [ref=e228] [cursor=pointer]:
+                  - generic [ref=e229]: C1
+                  - generic [ref=e230]:
+                    - strong [ref=e231]: Closing Time Again
+                    - generic [ref=e232]: Meridian Line Last Rounds
+                - button "C2 Two Beers Regular June Bell & the Late Shifts" [ref=e233] [cursor=pointer]:
+                  - generic [ref=e234]: C2
+                  - generic [ref=e235]:
+                    - strong [ref=e236]: Two Beers Regular
+                    - generic [ref=e237]: June Bell & the Late Shifts
+                - button "C3 Blue Collar Halo The House Regulars" [ref=e238] [cursor=pointer]:
+                  - generic [ref=e239]: C3
+                  - generic [ref=e240]:
+                    - strong [ref=e241]: Blue Collar Halo
+                    - generic [ref=e242]: The House Regulars
+                - button "C4 Last Call Past Midnight Carrollton Ave Loose Change" [ref=e243] [cursor=pointer]:
+                  - generic [ref=e244]: C4
+                  - generic [ref=e245]:
+                    - strong [ref=e246]: Last Call Past Midnight
+                    - generic [ref=e247]: Carrollton Ave Loose Change
+                - button "C5 Neon for the Road Walt Mercer & the Saints" [ref=e248] [cursor=pointer]:
+                  - generic [ref=e249]: C5
+                  - generic [ref=e250]:
+                    - strong [ref=e251]: Neon for the Road
+                    - generic [ref=e252]: Walt Mercer & the Saints
+                - button "C6 Quarter in the Machine Confidential The Mile Marker Side Streets" [ref=e253] [cursor=pointer]:
+                  - generic [ref=e254]: C6
+                  - generic [ref=e255]:
+                    - strong [ref=e256]: Quarter in the Machine Confidential
+                    - generic [ref=e257]: The Mile Marker Side Streets
+                - button "C7 Last Call Waltz Jeffrey Taylor JT" [ref=e258] [cursor=pointer]:
+                  - generic [ref=e259]: C7
+                  - generic [ref=e260]:
+                    - strong [ref=e261]: Last Call Waltz
+                    - generic [ref=e262]: Jeffrey Taylor
+                  - generic "Jeffrey's recording" [ref=e263]: JT
+                - button "C8 Tavern Window Promises The Alley Cat Low Notes" [ref=e264] [cursor=pointer]:
+                  - generic [ref=e265]: C8
+                  - generic [ref=e266]:
+                    - strong [ref=e267]: Tavern Window Promises
+                    - generic [ref=e268]: The Alley Cat Low Notes
+                - button "C9 Friday Night Till Closing The Turnaround Kings" [ref=e269] [cursor=pointer]:
+                  - generic [ref=e270]: C9
+                  - generic [ref=e271]:
+                    - strong [ref=e272]: Friday Night Till Closing
+                    - generic [ref=e273]: The Turnaround Kings
+                - button "C10 Cigarette Sunrise Lullaby Cal Porter's Closing Crew" [ref=e274] [cursor=pointer]:
+                  - generic [ref=e275]: C10
+                  - generic [ref=e276]:
+                    - strong [ref=e277]: Cigarette Sunrise Lullaby
+                    - generic [ref=e278]: Cal Porter's Closing Crew
+              - generic [ref=e279]:
+                - generic [ref=e280]: D1–D10
+                - button "D1 One More Heartache The Back Booth Old Roads" [ref=e281] [cursor=pointer]:
+                  - generic [ref=e282]: D1
+                  - generic [ref=e283]:
+                    - strong [ref=e284]: One More Heartache
+                    - generic [ref=e285]: The Back Booth Old Roads
+                - button "D2 Pool Table on the Sign The County Night Owls" [ref=e286] [cursor=pointer]:
+                  - generic [ref=e287]: D2
+                  - generic [ref=e288]:
+                    - strong [ref=e289]: Pool Table on the Sign
+                    - generic [ref=e290]: The County Night Owls
+                - button "D3 Whiskey Over Main Street Martha Grey & the Last Rounds" [ref=e291] [cursor=pointer]:
+                  - generic [ref=e292]: D3
+                  - generic [ref=e293]:
+                    - strong [ref=e294]: Whiskey Over Main Street
+                    - generic [ref=e295]: Martha Grey & the Last Rounds
+                - button "D4 Back Booth Static Broad Ripple Late Shifts" [ref=e296] [cursor=pointer]:
+                  - generic [ref=e297]: D4
+                  - generic [ref=e298]:
+                    - strong [ref=e299]: Back Booth Static
+                    - generic [ref=e300]: Broad Ripple Late Shifts
+                - button "D5 Small Town Dust The Ashtray Regulars" [ref=e301] [cursor=pointer]:
+                  - generic [ref=e302]: D5
+                  - generic [ref=e303]:
+                    - strong [ref=e304]: Small Town Dust
+                    - generic [ref=e305]: The Ashtray Regulars
+                - button "D6 Chrome and Walnut Home Eddie Vale's Loose Change" [ref=e306] [cursor=pointer]:
+                  - generic [ref=e307]: D6
+                  - generic [ref=e308]:
+                    - strong [ref=e309]: Chrome and Walnut Home
+                    - generic [ref=e310]: Eddie Vale's Loose Change
+                - button "D7 Barstool Philosophy The Brass Saints" [ref=e311] [cursor=pointer]:
+                  - generic [ref=e312]: D7
+                  - generic [ref=e313]:
+                    - strong [ref=e314]: Barstool Philosophy
+                    - generic [ref=e315]: The Brass Saints
+                - button "D8 Sunday Morning Waltz Meridian Line Side Streets" [ref=e316] [cursor=pointer]:
+                  - generic [ref=e317]: D8
+                  - generic [ref=e318]:
+                    - strong [ref=e319]: Sunday Morning Waltz
+                    - generic [ref=e320]: Meridian Line Side Streets
+                - button "D9 Dime Store Rain June Bell & the Lines" [ref=e321] [cursor=pointer]:
+                  - generic [ref=e322]: D9
+                  - generic [ref=e323]:
+                    - strong [ref=e324]: Dime Store Rain
+                    - generic [ref=e325]: June Bell & the Lines
+                - button "D10 Corner Booth Tab The House Low Notes" [ref=e326] [cursor=pointer]:
+                  - generic [ref=e327]: D10
+                  - generic [ref=e328]:
+                    - strong [ref=e329]: Corner Booth Tab
+                    - generic [ref=e330]: The House Low Notes
+            - generic [ref=e146]:
+              - button "◀ BACK" [ref=e147] [cursor=pointer]
+              - generic [ref=e148]: 120 TITLES · 5 JEFFREY CUTS
+              - button "NEXT ▶" [ref=e149] [cursor=pointer]
+          - region "Visible record mechanism" [ref=e150]:
+            - generic [ref=e158]:
+              - generic [ref=e159]: JT
+              - strong [ref=e160]: C7
+              - generic [ref=e161]: 45 RPM
+            - generic [ref=e165]: AUTOMATIC CHANGER · SERVICED WHENEVER JACOB REMEMBERS
+          - region "Playback controls" [ref=e166]:
+            - generic [ref=e167]:
+              - generic [ref=e168]: ON THE TURNTABLE
+              - strong [ref=e169]: C7 · Last Call Waltz
+              - generic [ref=e170]: Jeffrey Taylor
+            - generic [ref=e171]:
+              - button "Previous Jeffrey recording" [ref=e172] [cursor=pointer]: ◀
+              - button "PLAY C7" [ref=e351] [cursor=pointer]
+              - button "Next Jeffrey recording" [ref=e174] [cursor=pointer]: ▶
+            - generic [ref=e188]:
+              - generic [ref=e189]: VOLUME
+              - slider "VOLUME" [ref=e190]: "0.8"
+            - generic [ref=e191]:
+              - button "Step outside into the alley" [ref=e192] [cursor=pointer]:
+                - generic [ref=e195]: STEP OUTSIDE
+              - button "PLAY ON TV" [disabled] [ref=e196]
+        - generic [ref=e197]:
+          - generic [ref=e198]: DARLING JUKE JOINT WORKS
+          - generic [ref=e199]: INDIANA · EST. 1985
+          - generic [ref=e200]: S/N JEFF-TAYLOR-001
+    - button "← STEP BACK FROM THE MACHINE" [ref=e201] [cursor=pointer]
+    - generic [ref=e26]: INSIDE · BACK ROOM
+    - region "Persistent music controls" [ref=e205]:
+      - generic [ref=e206]: C7
+      - generic [ref=e208]:
+        - generic [ref=e209]: PAUSED
+        - strong [ref=e210]: Last Call Waltz
+        - generic [ref=e211]: Jeffrey Taylor
+      - generic [ref=e212]: 0:39 / 3:47
+      - button "Resume current song" [ref=e350] [cursor=pointer]: ▶
+      - button "Play on a compatible TV or speaker" [ref=e215] [cursor=pointer]: ▣
+      - generic [ref=e216]:
+        - generic [ref=e217]: C7 · FREE (VIP)
+        - generic [ref=e218]: "Current Tab: 1 Cold Beer"
+  - alert [ref=e27]
