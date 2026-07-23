@@ -237,7 +237,7 @@ button { color: inherit; }
 
 .about-panel {
   position: fixed;
-  z-index: 54;
+  z-index: 102;
   top: 50%;
   left: clamp(18px, 5vw, 72px);
   width: min(440px, calc(100vw - 36px));
@@ -253,6 +253,15 @@ button { color: inherit; }
   backdrop-filter: blur(10px);
   animation: story-enter .32s ease both;
 }
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  animation: scrim-fade-in .2s ease both;
+}
+@keyframes scrim-fade-in { from { opacity: 0; } to { opacity: 1; } }
 .about-photo,
 .story-photo {
   position: relative;
@@ -268,7 +277,7 @@ button { color: inherit; }
 .about-panel h2 { margin: 6px 0 10px; color: #d6c18f; font-weight: 500; letter-spacing: .045em; }
 .about-panel p { margin: 0 0 12px; font-size: .98rem; line-height: 1.55; }
 .about-panel b { color: #b09a68; }
-.about-panel button { min-height: 36px; padding: 0 13px; border: 1px solid #5f5136; color: #998865; background: #171410; font: 800 .54rem "Courier New", monospace; letter-spacing: .1em; cursor: pointer; }
+.about-panel button { min-height: 44px; padding: 0 16px; border: 1px solid #5f5136; color: #998865; background: #171410; font: 800 .54rem "Courier New", monospace; letter-spacing: .1em; cursor: pointer; }
 
 .look-controls {
   position: fixed;
@@ -293,8 +302,8 @@ button { color: inherit; }
 .look-controls button,
 .bar-story button,
 .step-back {
-  min-height: 36px;
-  padding: 0 13px;
+  min-height: 44px;
+  padding: 0 16px;
   border: 1px solid #5f5136;
   background: #171410;
   color: #998865;
@@ -656,7 +665,7 @@ button { color: inherit; }
 }
 
 .page-controls { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding-top: 8px; }
-.page-controls button { min-height: 31px; border: 1px outset #3d484b; color: #9fc4bb; background: #0a1b19; font: 800 .46rem "Courier New", monospace; cursor: pointer; }
+.page-controls button { min-height: 44px; padding: 0 12px; border: 1px outset #3d484b; color: #9fc4bb; background: #0a1b19; font: 800 .46rem "Courier New", monospace; cursor: pointer; }
 .page-controls button:disabled { opacity: .32; cursor: not-allowed; }
 .page-controls span { color: #786c51; text-align: center; font: 700 .42rem "Courier New", monospace; }
 
@@ -701,8 +710,8 @@ button { color: inherit; }
 .now-playing strong { color: #ff5a3c; font-size: .72rem; text-shadow: 0 0 8px #ff3b2166; }
 .now-playing small { color: #6d7d78; font: .43rem "Courier New", monospace; }
 .now-playing em { margin-top: 2px; color: #c05a48; font: 800 .38rem "Courier New", monospace; }
-.transport { display: grid; grid-template-columns: 30px minmax(76px, auto) 30px; gap: 4px; }
-.transport button { border: 1px outset #3d484b; color: #a7b8b3; background: #131717; font: 900 .52rem "Courier New", monospace; cursor: pointer; }
+.transport { display: grid; grid-template-columns: 44px minmax(76px, auto) 44px; gap: 4px; }
+.transport button { min-height: 44px; border: 1px outset #3d484b; color: #a7b8b3; background: #131717; font: 900 .52rem "Courier New", monospace; cursor: pointer; }
 .transport .play-button { color: #ffd9c8; background: linear-gradient(#8c1d14, #4e100c); box-shadow: 0 0 14px #ff2f1a3d, inset 0 1px 0 #ffffff2b; }
 .volume-control { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 7px; color: #5a6c67; font: 800 .42rem "Courier New", monospace; letter-spacing: .08em; }
 .volume-control input { width: 100%; accent-color: #b3271a; }
@@ -725,7 +734,7 @@ button { color: inherit; }
 }
 .machine-actions { display: grid; grid-template-columns: 1fr 1.25fr; gap: 4px; align-items: center; }
 
-.cast-button { min-height: 27px; border: 1px outset #534832; color: #9e9275; background: #1e1a15; font: 900 .4rem "Courier New", monospace; cursor: pointer; }
+.cast-button { min-height: 44px; padding: 0 12px; border: 1px outset #534832; color: #9e9275; background: #1e1a15; font: 900 .4rem "Courier New", monospace; cursor: pointer; }
 .cast-button:disabled { opacity: .42; cursor: not-allowed; }
 .cast-button.state-connected { color: #b7c5a4; background: #263b2e; }
 
@@ -791,16 +800,16 @@ button { color: inherit; }
 .dock-progress::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: #302a1e; }
 .dock-progress i { position: absolute; left: 0; top: 5px; height: 2px; background: #7e2a21; }
 .dock-progress span { position: absolute; right: 0; bottom: 0; padding-left: 5px; color: #5e5644; background: #090806; font: .36rem "Courier New", monospace; }
-.dock-toggle, .dock-cast { width: 35px; height: 35px; border: 1px solid #5f5033; color: #c8b587; background: #401514; cursor: pointer; }
-.dock-cast { width: 30px; color: #978767; background: #16130f; }
+.dock-toggle, .dock-cast { min-width: 44px; min-height: 44px; border: 1px solid #5f5033; color: #c8b587; background: #401514; cursor: pointer; display: grid; place-items: center; }
+.dock-cast { min-width: 44px; color: #978767; background: #16130f; }
 
 .door-switch {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 27px;
-  padding: 0 9px;
+  min-height: 44px;
+  padding: 0 12px;
   border: 1px outset #534832;
   color: #9e9275;
   background: linear-gradient(180deg, #241d15, #171310);
@@ -944,7 +953,7 @@ button { color: inherit; }
   position: fixed;
   left: 50%;
   top: 50%;
-  z-index: 64;
+  z-index: 104;
   width: min(390px, calc(100vw - 36px));
   transform: translate(-50%, -50%) rotate(-3deg);
   padding: 36px 32px 28px;
@@ -960,14 +969,14 @@ button { color: inherit; }
   right: 12px;
   top: 8px;
   display: grid;
-  height: 32px;
-  width: 32px;
+  height: 44px;
+  width: 44px;
   place-items: center;
   border-radius: 50%;
   border: 1px solid rgba(90, 69, 53, .4);
   background: rgba(217, 201, 167, .55);
   font-family: "Courier New", monospace;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -1013,13 +1022,13 @@ button { color: inherit; }
   color: #8a3529;
 }
 .coaster-dialog-next {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 0 20px;
   border: 2px solid #4c3020;
   background: #4c211b;
   color: #f3e5c5;
   font-family: "Courier New", monospace;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: .1em;

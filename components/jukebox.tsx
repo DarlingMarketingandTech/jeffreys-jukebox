@@ -21,6 +21,8 @@ interface JukeboxProps {
 export function Jukebox({ tracks }: JukeboxProps) {
   const movementTimerRef = useRef<number | null>(null);
   const outsideSettledTimerRef = useRef<number | null>(null);
+  const aboutTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const aboutPanelRef = useRef<HTMLElement | null>(null);
   const { currentView, setView } = useMood();
   const mood = currentView;
   const isOutside = currentView === "outside";
@@ -60,6 +62,65 @@ export function Jukebox({ tracks }: JukeboxProps) {
       if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
     };
   }, [currentView]);
+
+  useEffect(() => {
+    if (!aboutOpen) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setAboutOpen(false);
+        aboutTriggerRef.current?.focus();
+      }
+    };
+
+    const handleBackdropClick = (event: MouseEvent) => {
+      if (aboutPanelRef.current && event.target === aboutPanelRef.current.parentElement) {
+        setAboutOpen(false);
+        aboutTriggerRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    window.addEventListener("click", handleBackdropClick);
+
+    const panelElement = aboutPanelRef.current;
+    if (panelElement) {
+      const focusableElements = panelElement.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement | undefined;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement | undefined;
+
+      const handleTabKey = (e: KeyboardEvent) => {
+        if (e.key !== "Tab") return;
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
+      };
+
+      window.addEventListener("keydown", handleTabKey);
+      firstElement?.focus();
+
+      return () => {
+        window.removeEventListener("keydown", handleTabKey);
+        window.removeEventListener("keydown", handleEscape);
+        window.removeEventListener("click", handleBackdropClick);
+      };
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("click", handleBackdropClick);
+    };
+  }, [aboutOpen]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
@@ -156,21 +217,41 @@ export function Jukebox({ tracks }: JukeboxProps) {
               onToggle={handleViewToggle}
             />
           </div>
-          <button className="about-trigger" onClick={() => setAboutOpen(true)}>ABOUT THE CAT · 6267 CARROLLTON AVE</button>
+          <button 
+            className="about-trigger" 
+            onClick={() => setAboutOpen(true)}
+            ref={aboutTriggerRef}
+          >ABOUT THE CAT · 6267 CARROLLTON AVE</button>
           <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
         </section>
       )}
 
       {aboutOpen && (
-        <aside className="about-panel" aria-label="About the Alley Cat Lounge">
-          <div className="about-photo"><Image src="/images/alley-cat-exterior.webp" alt="The alley entrance and illuminated Alley Cat Lounge sign" fill sizes="420px" /></div>
-          <span>ABOUT THE ALLEY CAT</span>
-          <h2>Broad Ripple&apos;s hole-in-the-wall since way back.</h2>
-          <p>Tucked away at 6267 Carrollton Ave, the Alley Cat Lounge is an Indianapolis dive-bar institution: strong affordable drinks, pool, arcade games, a jukebox, and absolutely no attitude.</p>
-          <p>No reservations. Walk in, grab a drink, find a booth, and see where the night takes you.</p>
-          <div><b>THE ORIGINAL BACK BAR</b><small>POOL · ARCADE · JUKEBOX · 7AM–3AM DAILY</small></div>
-          <button onClick={() => setAboutOpen(false)}>CLOSE &amp; GET BACK TO THE MUSIC</button>
-        </aside>
+        <>
+          <div className="modal-scrim" onClick={() => {
+            setAboutOpen(false);
+            aboutTriggerRef.current?.focus();
+          }} />
+          <aside 
+            className="about-panel" 
+            ref={aboutPanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-panel-title"
+            aria-describedby="about-panel-description"
+          >
+            <div className="about-photo"><Image src="/images/alley-cat-exterior.webp" alt="The alley entrance and illuminated Alley Cat Lounge sign" fill sizes="420px" /></div>
+            <span>ABOUT THE ALLEY CAT</span>
+            <h2 id="about-panel-title">Broad Ripple&apos;s hole-in-the-wall since way back.</h2>
+            <p id="about-panel-description">Tucked away at 6267 Carrollton Ave, the Alley Cat Lounge is an Indianapolis dive-bar institution: strong affordable drinks, pool, arcade games, a jukebox, and absolutely no attitude.</p>
+            <p>No reservations. Walk in, grab a drink, find a booth, and see where the night takes you.</p>
+            <div><b>THE ORIGINAL BACK BAR</b><small>POOL · ARCADE · JUKEBOX · 7AM–3AM DAILY</small></div>
+            <button onClick={() => {
+              setAboutOpen(false);
+              aboutTriggerRef.current?.focus();
+            }}>CLOSE &amp; GET BACK TO THE MUSIC</button>
+          </aside>
+        </>
       )}
 
       {!isOutside && (
