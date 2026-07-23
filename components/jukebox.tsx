@@ -33,7 +33,6 @@ export function Jukebox({ tracks }: JukeboxProps) {
 
   const audio = useJukeboxAudio({ tracks, mood, pageLetters });
   const { remoteSupported, remoteAvailable, remoteState, promptRemotePlayback } = useRemotePlayback(audio.audioRef);
-
   const sceneImage = isOutside
     ? "/images/alley-cat-exterior.webp"
     : look === "left"
@@ -41,6 +40,15 @@ export function Jukebox({ tracks }: JukeboxProps) {
       : look === "right"
         ? "/images/alley-cat-signed-wall.webp"
         : "/images/alley-cat-bar.webp";
+
+  useEffect(() => {
+    if (!aboutOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAboutOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [aboutOpen]);
 
   useEffect(() => {
     return () => {
@@ -162,7 +170,15 @@ export function Jukebox({ tracks }: JukeboxProps) {
       )}
 
       {aboutOpen && (
-        <aside className="about-panel" aria-label="About the Alley Cat Lounge">
+        <aside className="about-panel" role="dialog" aria-modal="true" aria-label="About the Alley Cat Lounge">
+          <button
+            type="button"
+            className="about-panel-close"
+            onClick={() => setAboutOpen(false)}
+            aria-label="Close the About panel"
+          >
+            ×
+          </button>
           <div className="about-photo"><Image src="/images/alley-cat-exterior.webp" alt="The alley entrance and illuminated Alley Cat Lounge sign" fill sizes="420px" /></div>
           <span>ABOUT THE ALLEY CAT</span>
           <h2>Broad Ripple&apos;s hole-in-the-wall since way back.</h2>

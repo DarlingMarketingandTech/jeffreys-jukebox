@@ -135,14 +135,15 @@ button { color: inherit; }
   display: grid;
   gap: 2px;
   padding: 8px 12px 9px;
-  border-left: 3px solid #8d713e;
+  border-top: 3px solid #8d713e;
+  border-radius: 0 0 12px 12px;
   background: #080706bf;
   box-shadow: 0 9px 25px #0008;
   backdrop-filter: blur(4px);
 }
 
 .bar-location b { color: #d0b77c; font: 900 .66rem "Courier New", monospace; letter-spacing: .18em; }
-.bar-location span { color: #8e8063; font: 700 .47rem "Courier New", monospace; letter-spacing: .13em; }
+.bar-location span { color: #8e8063; font: 700 .52rem "Courier New", monospace; letter-spacing: .13em; }
 
 .arrival-lockup {
   position: fixed;
@@ -245,13 +246,46 @@ button { color: inherit; }
   overflow: auto;
   padding: 15px;
   border: 1px solid #6d5a39;
-  border-left: 5px solid #591c18;
+  border-top: 5px solid #591c18;
+  border-radius: 0 0 14px 14px;
   color: #b9a77d;
   background: #0b0907f5;
   box-shadow: 0 30px 90px #000, inset 0 0 35px #000a;
   transform: translateY(-50%) rotate(-.35deg);
   backdrop-filter: blur(10px);
   animation: story-enter .32s ease both;
+}
+
+.about-panel::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  animation: fade-in .32s ease both;
+}
+
+.about-panel-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid #8a7563;
+  border-radius: 50%;
+  background: rgba(139, 119, 87, 0.2);
+  color: #d6c18f;
+  font: 900 1.2rem "Courier New", monospace;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.about-panel-close:hover {
+  background: rgba(139, 119, 87, 0.4);
+  color: #e7d5a4;
 }
 .about-photo,
 .story-photo {
@@ -485,7 +519,7 @@ button { color: inherit; }
     linear-gradient(#131c1b, #090d0d);
   box-shadow: inset 0 0 34px #000, inset 0 -10px 18px #000a, inset 0 1px 0 #ffffff10;
 }
-.machine-marquee small { display: block; color: #5f7a72; font: 900 .48rem "Courier New", monospace; letter-spacing: .22em; }
+.machine-marquee small { display: block; color: #5f7a72; font: 900 .54rem "Courier New", monospace; letter-spacing: .22em; }
 .machine-marquee h2 { margin: 3px 0 -1px; color: #d9ede6; font-size: clamp(1.65rem, 3.5vw, 3.05rem); font-weight: 500; line-height: .85; letter-spacing: .09em; text-shadow: 0 0 18px #2fe0c96b; }
 .marquee-flicker { animation: marquee-flicker 4.2s ease-in-out infinite; }
 .machine-marquee b { color: #a3332a; font: 900 .56rem "Courier New", monospace; letter-spacing: .5em; text-shadow: 0 0 10px #ff493466; }
@@ -658,7 +692,7 @@ button { color: inherit; }
 .page-controls { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding-top: 8px; }
 .page-controls button { min-height: 31px; border: 1px outset #3d484b; color: #9fc4bb; background: #0a1b19; font: 800 .46rem "Courier New", monospace; cursor: pointer; }
 .page-controls button:disabled { opacity: .32; cursor: not-allowed; }
-.page-controls span { color: #786c51; text-align: center; font: 700 .42rem "Courier New", monospace; }
+.page-controls span { color: #786c51; text-align: center; font: 700 .48rem "Courier New", monospace; }
 
 .mechanism-window {
   position: relative;
@@ -681,7 +715,7 @@ button { color: inherit; }
 
 .vinyl { position: absolute; z-index: 2; left: 50%; top: 50%; width: min(220px, 70%); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: repeating-radial-gradient(circle, #070707 0 3px, #171717 4px 5px, #090909 6px 8px); box-shadow: 0 17px 25px #000; transition: top .52s ease, transform .52s ease; }
 .vinyl > div { position: absolute; inset: 35%; display: grid; place-items: center; align-content: center; border: 1px solid #8e7547; border-radius: 50%; color: #20150d; background: radial-gradient(#c3ad72, #6d261f 80%); text-align: center; }
-.vinyl small, .vinyl span { font: 900 .38rem "Courier New", monospace; }
+.vinyl small, .vinyl span { font: 900 .42rem "Courier New", monospace; }
 .vinyl strong { font-size: 1.38rem; line-height: 1; }
 .vinyl.spinning { animation: vinyl-spin 3.2s linear infinite; }
 .selector-arm { position: absolute; z-index: 3; top: 8%; left: 12%; width: 15px; height: 47%; border-radius: 8px; background: linear-gradient(90deg, #403828, #95815a, #393023); transform: rotate(-21deg); transform-origin: top; transition: transform .65s ease; }
@@ -692,11 +726,11 @@ button { color: inherit; }
 .mechanism-playing .selector-arm { transform: rotate(4deg); }
 .mechanism-playing .needle-arm { transform: rotate(31deg); }
 .mechanism-rejected .mechanism-window { animation: machine-shake .35s ease 2; }
-.mechanism-caption { position: absolute; z-index: 6; left: 50%; bottom: 6px; width: 91%; transform: translateX(-50%); color: #6c624d; text-align: center; font: 700 .37rem "Courier New", monospace; letter-spacing: .06em; }
+.mechanism-caption { position: absolute; z-index: 6; left: 50%; bottom: 6px; width: 91%; transform: translateX(-50%); color: #6c624d; text-align: center; font: 700 .42rem "Courier New", monospace; letter-spacing: .06em; }
 
 .control-deck { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 9px; background: linear-gradient(115deg, #ffffff08, transparent 27%), #0c0f0f; }
 .now-playing { min-width: 0; display: grid; align-content: center; padding: 6px 8px; border: 1px inset #2c3638; background: #030505; }
-.now-playing span { color: #4d6a63; font: 900 .38rem "Courier New", monospace; letter-spacing: .14em; }
+.now-playing span { color: #4d6a63; font: 900 .42rem "Courier New", monospace; letter-spacing: .14em; }
 .now-playing strong, .now-playing small, .now-playing em { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .now-playing strong { color: #ff5a3c; font-size: .72rem; text-shadow: 0 0 8px #ff3b2166; }
 .now-playing small { color: #6d7d78; font: .43rem "Courier New", monospace; }
@@ -750,7 +784,8 @@ button { color: inherit; }
   align-items: center;
   padding: 9px 10px 7px;
   border: 1px solid #6a5939;
-  border-left: 4px solid #6f211c;
+  border-top: 4px solid #6f211c;
+  border-radius: 0 0 12px 12px;
   color: #c4b284;
   background: #090806f2;
   box-shadow: 0 16px 40px #000d, inset 0 0 22px #000;
@@ -775,7 +810,7 @@ button { color: inherit; }
   padding-top: 4px;
   border-top: 1px dashed #5e5644;
   color: #6e6248;
-  font: 700 .34rem "Courier New", monospace;
+  font: 700 .38rem "Courier New", monospace;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
@@ -783,14 +818,14 @@ button { color: inherit; }
 .dock-record span { width: 19px; height: 19px; display: grid; place-items: center; border-radius: 50%; color: #231512; background: #8e5c3e; font: 900 .42rem "Courier New", monospace; }
 .dock-record.spinning { animation: dock-spin 3s linear infinite; }
 .dock-copy { min-width: 0; display: grid; }
-.dock-copy span { color: #7f6c46; font: 900 .38rem "Courier New", monospace; letter-spacing: .15em; }
+.dock-copy span { color: #7f6c46; font: 900 .42rem "Courier New", monospace; letter-spacing: .15em; }
 .dock-copy strong, .dock-copy small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .dock-copy strong { color: #d0bd8d; font-size: .8rem; }
 .dock-copy small { color: #786d56; font: .46rem "Courier New", monospace; }
 .dock-progress { grid-column: 2 / 5; position: relative; height: 12px; border-top: 1px solid #2d281d; overflow: hidden; }
 .dock-progress::before { content: ""; position: absolute; left: 0; right: 0; top: 5px; height: 2px; background: #302a1e; }
 .dock-progress i { position: absolute; left: 0; top: 5px; height: 2px; background: #7e2a21; }
-.dock-progress span { position: absolute; right: 0; bottom: 0; padding-left: 5px; color: #5e5644; background: #090806; font: .36rem "Courier New", monospace; }
+.dock-progress span { position: absolute; right: 0; bottom: 0; padding-left: 5px; color: #5e5644; background: #090806; font: .40rem "Courier New", monospace; }
 .dock-toggle, .dock-cast { width: 35px; height: 35px; border: 1px solid #5f5033; color: #c8b587; background: #401514; cursor: pointer; }
 .dock-cast { width: 30px; color: #978767; background: #16130f; }
 
@@ -863,14 +898,15 @@ button { color: inherit; }
   max-width: min(44ch, calc(100vw - 48px));
   padding: 13px 18px;
   border: 1px solid #39434e;
-  border-left: 4px solid #5a6a7a;
+  border-top: 4px solid #5a6a7a;
+  border-radius: 0 0 12px 12px;
   color: #a9b6c2;
   text-align: center;
   background: #05070af0;
   box-shadow: 0 18px 50px #000d;
   backdrop-filter: blur(4px);
 }
-.alley-note span { color: #6d7d8d; font: 900 .46rem "Courier New", monospace; letter-spacing: .18em; }
+.alley-note span { color: #6d7d8d; font: 900 .52rem "Courier New", monospace; letter-spacing: .18em; }
 .alley-note p { margin: 7px 0 0; font-size: .98rem; line-height: 1.5; }
 
 .flickering-neon {
@@ -1045,6 +1081,7 @@ button { color: inherit; }
 button:focus-visible, input:focus-visible { outline: 3px solid #b7904d; outline-offset: 3px; }
 
 @keyframes enter-room { from { transform: scale(1.14) translateY(2%); filter: blur(7px) brightness(.2); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes door-open { 0%, 18% { opacity: 1; } 55% { opacity: .68; } 100% { opacity: 0; } }
 @keyframes lockup-arrive { from { opacity: 0; transform: translateX(18px); } }
 @keyframes camera-bob { 0% { filter: blur(0); } 24% { transform: translateY(7px) rotate(.18deg); filter: blur(1px); } 51% { transform: translateY(-5px) rotate(-.15deg); } 78% { transform: translateY(3px); } 100% { transform: none; filter: none; } }

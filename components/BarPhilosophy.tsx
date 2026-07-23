@@ -61,7 +61,7 @@ export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
       {isOpen && (
         <section
           role="dialog"
-          aria-modal="false"
+          aria-modal="true"
           aria-label={isOutside ? "Alley thought" : "Bar philosophy"}
           className={`coaster-dialog torn-napkin ${isOutside ? "coaster-dialog-outside" : ""}`}
         >
