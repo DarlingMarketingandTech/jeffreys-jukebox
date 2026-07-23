@@ -1,0 +1,177 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: THE ALLEY CAT
+      - generic [ref=e7]: INDIANAPOLIS · BACK ROOM
+    - region "Enter Jeffrey's listening room" [ref=e8]:
+      - generic [ref=e9]:
+        - text: PRIVATE PRESSINGS
+        - heading "JEFFREY'S" [level=1] [ref=e10]
+        - strong [ref=e11]: JUKEBOX
+        - generic [ref=e12]: JT
+      - paragraph [ref=e13]: Five Jeffrey Taylor originals. One old machine. Your stool is still open.
+      - generic [ref=e14]:
+        - button "WALK UP & PICK A SONG →" [ref=e15] [cursor=pointer]
+        - button "Step outside into the alley" [ref=e16] [cursor=pointer]:
+          - generic [ref=e19]: STEP OUTSIDE
+      - button "ABOUT THE CAT · 6267 CARROLLTON AVE" [ref=e20] [cursor=pointer]
+      - generic [ref=e21]: DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85
+    - navigation "Look around the bar" [ref=e22]:
+      - button "← POOL ROOM" [ref=e23] [cursor=pointer]
+      - button "JUKEBOX" [ref=e24] [cursor=pointer]
+      - button "SIGNED WALL →" [ref=e25] [cursor=pointer]
+    - region "Darling Juke Joint Works jukebox":
+      - generic:
+        - generic:
+          - generic: ALLEYCAT
+          - generic: NOREQUESTS
+          - generic: SERVICEDBY JACOB
+          - generic:
+            - generic:
+              - generic: DARLING JUKE JOINT WORKS · No. 85
+              - heading "JEFFREY'S" [level=2]
+              - text: PRIVATE PRESSINGS
+          - generic:
+            - region "Song title catalog":
+              - generic:
+                - generic: SELECT A RECORD
+                - strong: PICK A TITLE · THEN PRESS PLAY
+                - generic: A/B
+              - generic:
+                - generic:
+                  - generic: A1–A10
+                  - button "A1 Closing Time Again The Ashtray Saints":
+                    - generic: A1
+                    - generic:
+                      - strong: Closing Time Again
+                      - generic: The Ashtray Saints
+                  - button "A2 Two Beers Regular Eddie Vale's Side Streets":
+                    - generic: A2
+                    - generic:
+                      - strong: Two Beers Regular
+                      - generic: Eddie Vale's Side Streets
+                  - button "A3 Back Room Serenade Jeffrey Taylor JT":
+                    - generic: A3
+                    - generic:
+                      - strong: Back Room Serenade
+                      - generic: Jeffrey Taylor
+                    - generic "Jeffrey's recording": JT
+                  - button "A4 Last Call Past Midnight Meridian Line Low Notes":
+                    - generic: A4
+                    - generic:
+                      - strong: Last Call Past Midnight
+                      - generic: Meridian Line Low Notes
+                  - button "A5 Neon for the Road June Bell & the Kings":
+                    - generic: A5
+                    - generic:
+                      - strong: Neon for the Road
+                      - generic: June Bell & the Kings
+                  - button "A6 Quarter in the Machine Confidential The House Closing Crew":
+                    - generic: A6
+                    - generic:
+                      - strong: Quarter in the Machine Confidential
+                      - generic: The House Closing Crew
+                  - button "A7 Old Route Moon Carrollton Ave Old Roads":
+                    - generic: A7
+                    - generic:
+                      - strong: Old Route Moon
+                      - generic: Carrollton Ave Old Roads
+                  - button "A8 Tavern Window Promises Walt Mercer & the Night Owls":
+                    - generic: A8
+                    - generic:
+                      - strong: Tavern Window Promises
+                      - generic: Walt Mercer & the Night Owls
+                  - button "A9 Friday Night Till Closing The Mile Marker Last Rounds":
+                    - generic: A9
+                    - generic:
+                      - strong: Friday Night Till Closing
+                      - generic: The Mile Marker Last Rounds
+                  - button "A10 Cigarette Sunrise Lullaby Ginny Cole & the Late Shifts":
+                    - generic: A10
+                    - generic:
+                      - strong: Cigarette Sunrise Lullaby
+                      - generic: Ginny Cole & the Late Shifts
+                - generic:
+                  - generic: B1–B10
+                  - button "B1 One More Heartache The Alley Cat Regulars":
+                    - generic: B1
+                    - generic:
+                      - strong: One More Heartache
+                      - generic: The Alley Cat Regulars
+                  - button "B2 Pool Table on the Sign The Turnaround Loose Change":
+                    - generic: B2
+                    - generic:
+                      - strong: Pool Table on the Sign
+                      - generic: The Turnaround Loose Change
+                  - button "B3 Whiskey Over Main Street Cal Porter's Saints":
+                    - generic: B3
+                    - generic:
+                      - strong: Whiskey Over Main Street
+                      - generic: Cal Porter's Saints
+                  - button "B4 Back Booth Static The Back Booth Side Streets":
+                    - generic: B4
+                    - generic:
+                      - strong: Back Booth Static
+                      - generic: The Back Booth Side Streets
+                  - button "B5 Small Town Dust The County Lines":
+                    - generic: B5
+                    - generic:
+                      - strong: Small Town Dust
+                      - generic: The County Lines
+                  - button "B6 Chrome and Walnut Home Martha Grey & the Low Notes":
+                    - generic: B6
+                    - generic:
+                      - strong: Chrome and Walnut Home
+                      - generic: Martha Grey & the Low Notes
+                  - button "B7 Barstool Philosophy Broad Ripple Kings":
+                    - generic: B7
+                    - generic:
+                      - strong: Barstool Philosophy
+                      - generic: Broad Ripple Kings
+                  - button "B8 Sunday Morning Waltz The Ashtray Closing Crew":
+                    - generic: B8
+                    - generic:
+                      - strong: Sunday Morning Waltz
+                      - generic: The Ashtray Closing Crew
+                  - button "B9 Dime Store Rain Eddie Vale's Old Roads":
+                    - generic: B9
+                    - generic:
+                      - strong: Dime Store Rain
+                      - generic: Eddie Vale's Old Roads
+                  - button "B10 Corner Booth Tab The Brass Night Owls":
+                    - generic: B10
+                    - generic:
+                      - strong: Corner Booth Tab
+                      - generic: The Brass Night Owls
+              - generic:
+                - button "◀ BACK" [disabled]
+                - generic: 120 TITLES · 5 JEFFREY CUTS
+                - button "NEXT ▶"
+            - region "Visible record mechanism":
+              - generic:
+                - generic:
+                  - generic: JT
+                  - strong: A3
+                  - generic: 45 RPM
+              - generic: AUTOMATIC CHANGER · SERVICED WHENEVER JACOB REMEMBERS
+            - region "Playback controls":
+              - generic:
+                - generic: ON THE TURNTABLE
+                - strong: A3 · Back Room Serenade
+                - generic: Jeffrey Taylor
+              - generic:
+                - button "Previous Jeffrey recording": ◀
+                - button "PLAY A3"
+                - button "Next Jeffrey recording": ▶
+              - generic:
+                - generic: VOLUME
+                - slider "VOLUME": "0.8"
+              - generic:
+                - button "Step outside into the alley":
+                  - generic: STEP OUTSIDE
+          - generic:
+            - generic: DARLING JUKE JOINT WORKS
+            - generic: INDIANA · EST. 1985
+            - generic: S/N JEFF-TAYLOR-001
+    - generic [ref=e26]: INSIDE · BACK ROOM
+  - alert [ref=e27]

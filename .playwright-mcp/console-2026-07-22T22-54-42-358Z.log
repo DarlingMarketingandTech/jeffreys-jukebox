@@ -1,0 +1,3 @@
+[     805ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://jeffreys-jukebox.vercel.app/_next/image?url=%2Fimages%2Falley-cat-bar.webp&w=1920&q=75:0
+[   16890ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://jeffreys-jukebox.vercel.app/_next/image?url=%2Fimages%2Falley-cat-bar.webp&w=640&q=75:0
+[  103173ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://jeffreys-jukebox.vercel.app/_next/image?url=%2Fimages%2FAlley-Cat-outside.jpg&w=640&q=75:0
