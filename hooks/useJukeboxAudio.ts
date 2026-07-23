@@ -6,41 +6,22 @@ import type { Track } from "@/lib/tracks";
 import { playNeedleScratch } from "@/lib/scratchSound";
 
 export type Mechanism = "idle" | "selecting" | "playing" | "paused" | "rejected";
-export type Mood = "inside" | "outside";
 
 export type AudioGraph = {
   context: AudioContext;
   analyser: AnalyserNode;
-  dryGain: GainNode;
-  wetGain: GainNode;
-  lowpass: BiquadFilterNode;
 };
 
 function wait(milliseconds: number) {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }
 
-function buildImpulseResponse(context: AudioContext) {
-  const length = Math.floor(context.sampleRate * 1.15);
-  const impulse = context.createBuffer(2, length, context.sampleRate);
-
-  for (let channel = 0; channel < impulse.numberOfChannels; channel += 1) {
-    const data = impulse.getChannelData(channel);
-    for (let index = 0; index < length; index += 1) {
-      data[index] = (Math.random() * 2 - 1) * Math.pow(1 - index / length, 3.5);
-    }
-  }
-
-  return impulse;
-}
-
 interface UseJukeboxAudioOptions {
   tracks: Track[];
-  mood: Mood;
   pageLetters: string[];
 }
 
-export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOptions) {
+export function useJukeboxAudio({ tracks, pageLetters }: UseJukeboxAudioOptions) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioGraphRef = useRef<AudioGraph | null>(null);
 
@@ -80,19 +61,12 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
       const context = new AudioContext();
       const source = context.createMediaElementSource(audio);
       const analyser = context.createAnalyser();
-      const dryGain = context.createGain();
-      const wetGain = context.createGain();
-      const lowpass = context.createBiquadFilter();
-      const convolver = context.createConvolver();
 
-      lowpass.type = "lowpass";
       analyser.fftSize = 64;
-      convolver.buffer = buildImpulseResponse(context);
       source.connect(analyser);
-      analyser.connect(dryGain).connect(context.destination);
-      analyser.connect(lowpass).connect(convolver).connect(wetGain).connect(context.destination);
+      analyser.connect(context.destination);
 
-      const graph = { context, analyser, dryGain, wetGain, lowpass };
+      const graph = { context, analyser };
       audioGraphRef.current = graph;
       setAnalyserNode(analyser);
       return graph;
@@ -101,14 +75,10 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
     }
   }, []);
 
-  const applyMoodSound = useCallback(async (nextMood: Mood) => {
+  const resumeAudioGraph = useCallback(async () => {
     const graph = ensureAudioGraph();
     if (!graph) return;
     if (graph.context.state === "suspended") await graph.context.resume();
-
-    graph.dryGain.gain.setTargetAtTime(nextMood === "outside" ? 0.82 : 1, graph.context.currentTime, 0.08);
-    graph.wetGain.gain.setTargetAtTime(nextMood === "outside" ? 0.2 : 0, graph.context.currentTime, 0.08);
-    graph.lowpass.frequency.setTargetAtTime(nextMood === "outside" ? 2750 : 5600, graph.context.currentTime, 0.08);
   }, [ensureAudioGraph]);
 
   const chooseTrack = useCallback((track: Track) => {
@@ -135,7 +105,7 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
     setMessage(`PULLING ${track.code} FROM THE RACK…`);
 
     try {
-      await applyMoodSound(mood);
+      await resumeAudioGraph();
       await audio.play();
       setPlaying(true);
       await wait(720);
@@ -146,7 +116,7 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
       setMechanism("idle");
       setMessage("TAP PLAY AGAIN TO START");
     }
-  }, [applyMoodSound, mood]);
+  }, [resumeAudioGraph]);
 
   const startSelected = useCallback(async () => {
     if (!selected.audio) {
@@ -167,7 +137,7 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
 
     if (audio.paused) {
       try {
-        await applyMoodSound(mood);
+        await resumeAudioGraph();
         await audio.play();
         setPlaying(true);
         setMechanism("playing");
@@ -181,7 +151,7 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
       setMechanism("paused");
       setMessage(`PAUSED · ${activeTrack.code}`);
     }
-  }, [activeTrack, applyMoodSound, mood]);
+  }, [activeTrack, resumeAudioGraph]);
 
   const handleMainPlayButton = useCallback(async () => {
     if (!selected.audio || !selectedIsActive) {
@@ -227,7 +197,6 @@ export function useJukeboxAudio({ tracks, mood, pageLetters }: UseJukeboxAudioOp
     mechanismTrack,
     selectedIsActive,
     showMusicDock,
-    applyMoodSound,
     chooseTrack,
     startTrack,
     startSelected,

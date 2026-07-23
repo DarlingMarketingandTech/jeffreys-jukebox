@@ -2,11 +2,11 @@
 
 import type { Mechanism } from "@/hooks/useJukeboxAudio";
 import type { Track } from "@/lib/tracks";
-import { DoorSwitch } from "@/components/DoorSwitch";
 import { VuMeter } from "@/components/VuMeter";
 import { useCabinetTilt } from "@/hooks/useCabinetTilt";
 
 interface JukeboxCabinetProps {
+  interactive: boolean;
   mechanism: Mechanism;
   message: string;
   leftLetter: string;
@@ -19,7 +19,6 @@ interface JukeboxCabinetProps {
   playing: boolean;
   selectedIsActive: boolean;
   volume: number;
-  mood: "inside" | "outside";
   analyserNode: AnalyserNode | null;
   remoteSupported: boolean;
   remoteAvailable: boolean;
@@ -29,11 +28,11 @@ interface JukeboxCabinetProps {
   onMoveLoaded: (direction: number) => void;
   onMainPlay: () => void;
   onVolumeChange: (volume: number) => void;
-  onViewToggle: () => void;
   onPromptRemote: () => void;
 }
 
 export function JukeboxCabinet({
+  interactive,
   mechanism,
   message,
   leftLetter,
@@ -46,7 +45,6 @@ export function JukeboxCabinet({
   playing,
   selectedIsActive,
   volume,
-  mood,
   analyserNode,
   remoteSupported,
   remoteAvailable,
@@ -56,13 +54,17 @@ export function JukeboxCabinet({
   onMoveLoaded,
   onMainPlay,
   onVolumeChange,
-  onViewToggle,
   onPromptRemote,
 }: JukeboxCabinetProps) {
   const stageRef = useCabinetTilt<HTMLDivElement>();
 
   return (
-    <section className="jukebox-zone" data-layer="2-jukebox" aria-label="Darling Juke Joint Works jukebox">
+    <section
+      className="jukebox-zone"
+      data-layer="2-jukebox"
+      aria-label="Darling Juke Joint Works jukebox"
+      inert={!interactive}
+    >
       <div className="cabinet-stage" ref={stageRef}>
       <div className={`cabinet mechanism-${mechanism}`}>
         <div className="cabinet-depth cabinet-depth-left" aria-hidden="true" />
@@ -164,14 +166,8 @@ export function JukeboxCabinet({
                 onChange={(event) => onVolumeChange(Number(event.target.value))}
               />
             </label>
-            <div className="machine-actions">
-              <DoorSwitch
-                isOutside={mood === "outside"}
-                label={mood === "outside" ? "STEP INSIDE" : "STEP OUTSIDE"}
-                className="cabinet-door-switch"
-                onToggle={onViewToggle}
-              />
-              {remoteSupported && (
+            {remoteSupported && (
+              <div className="machine-actions">
                 <button
                   className={`cast-button state-${remoteState}`}
                   onClick={() => void onPromptRemote()}
@@ -179,8 +175,8 @@ export function JukeboxCabinet({
                 >
                   {remoteState === "connected" ? "ON DEVICE" : "PLAY ON TV"}
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </section>
         </div>
 
