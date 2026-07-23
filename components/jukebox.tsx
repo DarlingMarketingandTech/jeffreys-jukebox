@@ -35,7 +35,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
   const { remoteSupported, remoteAvailable, remoteState, promptRemotePlayback } = useRemotePlayback(audio.audioRef);
 
   const sceneImage = isOutside
-    ? "/images/Alley-Cat-outside.jpg"
+    ? "/images/alley-cat-exterior.webp"
     : look === "left"
       ? "/images/alley-cat-pool-room.webp"
       : look === "right"
