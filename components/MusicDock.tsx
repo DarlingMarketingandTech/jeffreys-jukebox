@@ -1,5 +1,6 @@
 "use client";
 
+import type { KeyboardEvent, MouseEvent } from "react";
 import type { Track } from "@/lib/tracks";
 
 function formatTime(seconds: number) {
@@ -17,6 +18,7 @@ interface MusicDockProps {
   remoteSupported: boolean;
   onTogglePlayback: () => void;
   onPromptRemote: () => void;
+  onSeek: (seconds: number) => void;
 }
 
 export function MusicDock({
@@ -28,9 +30,22 @@ export function MusicDock({
   remoteSupported,
   onTogglePlayback,
   onPromptRemote,
+  onSeek,
 }: MusicDockProps) {
-  const tabPrice = activeTrack.audio ? "FREE (VIP)" : "10¢";
-  const tabMood = "1 Cold Beer";
+  const progress = duration ? Math.min(100, (elapsed / duration) * 100) : 0;
+
+  function seekFromPointer(event: MouseEvent<HTMLButtonElement>) {
+    if (!duration) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+    onSeek(duration * ratio);
+  }
+
+  function seekFromKeyboard(event: KeyboardEvent<HTMLButtonElement>) {
+    if (!duration || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
+    event.preventDefault();
+    onSeek(elapsed + (event.key === "ArrowRight" ? 10 : -10));
+  }
 
   return (
     <section className="music-dock bar-tab" aria-label="Persistent music controls">
@@ -42,10 +57,16 @@ export function MusicDock({
         <strong>{activeTrack.title}</strong>
         <small>{activeTrack.artist}</small>
       </div>
-      <div className="dock-progress">
-        <i style={{ width: `${duration ? Math.min(100, (elapsed / duration) * 100) : 0}%` }} />
+      <button
+        type="button"
+        className="dock-progress"
+        onClick={seekFromPointer}
+        onKeyDown={seekFromKeyboard}
+        aria-label={`Seek in ${activeTrack.title}. ${formatTime(elapsed)} of ${formatTime(duration)}.`}
+      >
+        <i style={{ width: `${progress}%` }} />
         <span>{formatTime(elapsed)} / {formatTime(duration)}</span>
-      </div>
+      </button>
       <button
         className="dock-toggle"
         onClick={onTogglePlayback}
@@ -63,8 +84,8 @@ export function MusicDock({
         </button>
       )}
       <footer className="bar-tab-footer">
-        <span>{activeTrack.code} · {tabPrice}</span>
-        <span>Current Tab: {tabMood}</span>
+        <span>{activeTrack.code} · PRIVATE PRESSING</span>
+        <span>←/→ SEEK 10 SEC</span>
       </footer>
     </section>
   );

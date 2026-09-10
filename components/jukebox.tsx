@@ -1,15 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AudioReactiveAura } from "@/components/AudioReactiveAura";
 import { JukeboxCabinet } from "@/components/JukeboxCabinet";
 import { MusicDock } from "@/components/MusicDock";
 import { useJukeboxAudio } from "@/hooks/useJukeboxAudio";
 import { useRemotePlayback } from "@/hooks/useRemotePlayback";
 import { useSceneParallax } from "@/hooks/useSceneParallax";
 import type { Track } from "@/lib/tracks";
-
-const pageLetters = "ABCDEFGHIJKL".split("");
 
 interface JukeboxProps {
   tracks: Track[];
@@ -18,6 +17,7 @@ interface JukeboxProps {
 export function Jukebox({ tracks }: JukeboxProps) {
   const movementTimerRef = useRef<number | null>(null);
   const roomRef = useSceneParallax<HTMLElement>();
+  const pageLetters = useMemo(() => Array.from(new Set(tracks.map((track) => track.code[0]))), [tracks]);
 
   const [approached, setApproached] = useState(false);
   const [walking, setWalking] = useState(false);
@@ -37,7 +37,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: audio.activeTrack.title,
       artist: audio.activeTrack.artist,
-      album: "Jeffrey's Jukebox · The Alley Cat",
+      album: "Jeffrey's Jukebox · Private Pressings",
     });
     navigator.mediaSession.playbackState = audio.playing ? "playing" : "paused";
 
@@ -56,7 +56,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
       navigator.mediaSession.setActionHandler("previoustrack", handlePrevious);
       navigator.mediaSession.setActionHandler("nexttrack", handleNext);
     } catch {
-      // Some browsers reject action handlers
+      // Some browsers reject action handlers.
     }
 
     return () => {
@@ -66,10 +66,39 @@ export function Jukebox({ tracks }: JukeboxProps) {
         navigator.mediaSession.setActionHandler("previoustrack", null);
         navigator.mediaSession.setActionHandler("nexttrack", null);
       } catch {
-        // Ignore cleanup errors
+        // Ignore cleanup errors.
       }
     };
   }, [audio.activeTrack, audio.playing, audio.toggleActivePlayback, audio.moveLoaded]);
+
+  useEffect(() => {
+    if (!approached) return;
+
+    const handleKeyboard = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTypingTarget = target?.matches("input, textarea, select, button, [contenteditable='true']");
+
+      if (event.key === "Escape") {
+        moveCamera(false);
+        return;
+      }
+      if (isTypingTarget) return;
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        void audio.toggleActivePlayback();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        void audio.moveLoaded(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        void audio.moveLoaded(1);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyboard);
+    return () => window.removeEventListener("keydown", handleKeyboard);
+  }, [approached, audio.moveLoaded, audio.toggleActivePlayback]);
 
   function moveCamera(nextApproached: boolean) {
     if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
@@ -103,15 +132,23 @@ export function Jukebox({ tracks }: JukeboxProps) {
             aria-label="Walk up to the jukebox and pick a song"
           >
             <span className="hotspot-ring" aria-hidden="true" />
-            <span className="hotspot-label">WALK UP &amp; PICK A SONG</span>
+            <span className="hotspot-label">WALK UP &amp; PICK A REAL RECORDING</span>
           </button>
         )}
       </div>
+
       <div className="room-shade" aria-hidden="true" />
+      <AudioReactiveAura analyser={audio.analyserNode} playing={audio.playing} />
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
 
-      <div className="bar-location" data-layer="3-controls"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
+      <div className="bar-location" data-layer="3-controls">
+        <b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span>
+      </div>
+      <div className="real-library-chip" data-layer="3-controls">
+        <b>{tracks.length} REAL CUTS</b>
+        <span>JACOB + JEFFREY · PRIVATE ARCHIVE</span>
+      </div>
 
       {!approached && (
         <section className="arrival-lockup" data-layer="3-controls" aria-label="Jeffrey's Jukebox at the Alley Cat">
@@ -121,7 +158,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
             <strong>JUKEBOX</strong>
             <i>JT</i>
           </div>
-          <p>Five Jeffrey Taylor originals. One old machine. Your stool is still open.</p>
+          <p>{tracks.length} real recordings from Jacob Darling and Jeffrey Taylor. One old machine. No fake title cards.</p>
           <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
         </section>
       )}
@@ -133,6 +170,8 @@ export function Jukebox({ tracks }: JukeboxProps) {
         leftLetter={audio.leftLetter}
         rightLetter={audio.rightLetter}
         page={audio.page}
+        maxPage={audio.maxPage}
+        totalTracks={tracks.length}
         visibleTracks={audio.visibleTracks}
         selected={audio.selected}
         mechanismTrack={audio.mechanismTrack}
@@ -152,7 +191,11 @@ export function Jukebox({ tracks }: JukeboxProps) {
         onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
       />
 
-      {approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
+      {approached && (
+        <button className="step-back" onClick={() => moveCamera(false)}>
+          ← STEP BACK · ESC
+        </button>
+      )}
 
       {audio.showMusicDock && (
         <MusicDock
@@ -164,6 +207,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
           remoteSupported={remoteSupported}
           onTogglePlayback={() => void audio.toggleActivePlayback()}
           onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
+          onSeek={audio.seekTo}
         />
       )}
 

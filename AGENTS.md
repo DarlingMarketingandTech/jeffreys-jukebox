@@ -2,182 +2,164 @@
 
 Last reviewed: 2026-09-10
 
-This file is the durable agent handoff for the Jeffrey's Jukebox repo and app. It is intended to be added to ChatGPT project sources so future agents can get oriented before editing.
+This is the durable agent handoff for Jeffrey's Jukebox. Read it before changing audio, catalog behavior, interaction design, or deployment architecture.
 
-## Project identity
+## Product identity
 
-Jeffrey's Jukebox is a private, immersive listening-room web app built for the recovered recordings associated with Jeffrey Taylor and the Alley Cat / Indianapolis neighborhood-bar concept. The site should feel like walking up to an old custom jukebox in a real bar room, not like a generic playlist or audio player.
+Jeffrey's Jukebox is an immersive private-listening-room web app. Its visual thesis is **analog Indianapolis listening room**: walking up to a one-of-one battered jukebox in the Alley Cat back room, not opening a generic streaming service.
 
-Core experience currently observed in the repo:
+Current direction:
 
-- A Next.js App Router page renders a single client-side jukebox stage.
-- The arrival view uses `/public/images/intro-screen.png` as the persistent photo-based room backdrop.
-- The user walks up through a hotspot labelled `WALK UP & PICK A SONG`.
-- The jukebox contains 120 visible title-card selections, but only 5 loaded recordings.
-- Loaded tracks are marked with `JT` and use Cloudinary-hosted MP3 URLs.
-- Decorative / unloaded selections intentionally reject playback with a record-scratch message.
-- Playback is handled by a native `<audio>` element plus Web Audio analyser state for visual feedback.
-- Remote Playback is exposed when the browser supports the native Remote Playback API.
+- Real recordings only. Do not generate filler title cards.
+- Preserve the room photograph and physical-machine metaphor.
+- Keep playback reliable and lightweight before adding heavy 3D dependencies.
+- Favor tactile, audio-reactive interactions that reinforce the jukebox illusion.
 
-## Live deployment
-
-- Production URL: `https://jeffreys-jukebox.vercel.app/`
-- Vercel team: `darling-mar-tech`
-- Vercel project: `jeffreys-jukebox`
-- Vercel project id: `prj_1dpV0ozlowJV8Nti8lgWpNUvx2a0`
-- Latest reviewed production deployment id: `dpl_3is6uChvEfRpV13xTurpXY4Hrc1p`
-- Latest reviewed deployment state: `READY`
-- Latest reviewed deployment target: `production`
-- Vercel framework: `nextjs`
-- Vercel Node version: `24.x`
-- Recent reviewed production runtime errors: none found for the prior 7 days.
-
-## GitHub repository
+## Repository and deployment
 
 - Repo: `DarlingMarketingandTech/jeffreys-jukebox`
 - Default branch: `main`
-- Visibility at review time: public
-- Primary language: TypeScript
-- Homepage metadata: `https://jeffreys-jukebox.vercel.app`
+- Production: `https://jeffreys-jukebox.vercel.app/`
+- Vercel project: `jeffreys-jukebox`
+- Vercel team: `darling-mar-tech`
+- Framework: Next.js 16 App Router
+- Vercel Node line: 24.x
+- `next.config.ts` enables `cacheComponents: true`.
 
-## Stack and scripts
+Important Next.js 16 constraint: with Cache Components enabled, do not add legacy route-segment `dynamic`, `revalidate`, or `fetchCache` exports. Node.js is the required/default runtime.
 
-Package name: `jeffreys-jukebox`
-
-Runtime and framework:
+## Stack
 
 - Next.js `^16.0.0`
-- React `^19.2.4`
-- React DOM `^19.2.4`
+- React / React DOM `^19.2.4`
 - TypeScript `^5.7.0`
 - Tailwind CSS `^4.3.2`
 - PostCSS `^8.5.19`
+- Native Web Audio API
+- Native Media Session API
+- Native Remote Playback API when supported
 
-Available npm scripts:
+Scripts:
 
 ```bash
-npm install
 npm run dev
+npm run typecheck
 npm run build
-npm run start
+npm run check
 ```
 
-The README local run command uses:
+`npm run check` runs typecheck plus production build and is the preferred pre-merge gate.
 
-```bash
-npm run dev -- --hostname 127.0.0.1
-```
+## Current architecture
 
-Open `http://127.0.0.1:3000` for local review.
+- `app/page.tsx` — Server Component entry.
+- `app/layout.tsx` — metadata, Open Graph/Twitter metadata, fonts, global styling imports.
+- `app/globals.css` — core room and cabinet art direction.
+- `app/jukebox-effects.css` — audio-reactive/new enhancement styles.
+- `app/api/audio/[id]/route.ts` — same-origin bridge for selected shared Google Drive recordings; forwards byte-range headers where available.
+- `components/JukeboxStage.tsx` — client boundary wrapper.
+- `components/jukebox.tsx` — room orchestration, camera state, Media Session, keyboard shortcuts, audio element.
+- `components/JukeboxCabinet.tsx` — physical catalog and main controls.
+- `components/MusicDock.tsx` — persistent player and seek surface.
+- `components/AudioReactiveAura.tsx` — lightweight room-scale analyser visualization.
+- `components/VuMeter.tsx` — machine-level analyser visualization.
+- `hooks/useJukeboxAudio.ts` — playback, Web Audio graph, seeking, navigation, timing.
+- `hooks/useRemotePlayback.ts` — browser Remote Playback integration.
+- `hooks/useSceneParallax.ts` — pointer parallax with reduced-motion support.
+- `hooks/useCabinetTilt.ts` — physical cabinet tilt.
+- `lib/tracks.ts` — canonical playable catalog.
+- `docs/audio-catalog.md` — Drive inventory, duplicates, and normalization backlog.
+- `docs/qa-smoke-test.md` — fast verification path.
 
-## Important source files
+## Audio catalog
 
-- `app/page.tsx` - server component entry point; imports `JukeboxStage` and `tracks`.
-- `app/layout.tsx` - metadata, viewport, global CSS import, Google font setup.
-- `app/globals.css` - main visual system and layout styling. This is currently a large CSS file and should be edited carefully.
-- `components/JukeboxStage.tsx` - lightweight client wrapper around `Jukebox`.
-- `components/jukebox.tsx` - primary room orchestration, Media Session handlers, camera state, audio element, cabinet and music dock integration.
-- `components/JukeboxCabinet.tsx` - visual jukebox machine, catalog UI, playback controls, volume control, remote playback button.
-- `components/MusicDock.tsx` - persistent now-playing strip.
-- `components/VuMeter.tsx` - analyser-driven visual feedback.
-- `hooks/useJukeboxAudio.ts` - audio state, Web Audio graph, track selection, rejection behavior, transport, elapsed/duration, autoplay-safe playback attempts.
-- `hooks/useRemotePlayback.ts` - native Remote Playback API availability, state, prompt handling.
-- `hooks/useSceneParallax.ts` - pointer-driven room parallax that respects `prefers-reduced-motion`.
-- `hooks/useCabinetTilt.ts` - cabinet pointer tilt behavior.
-- `lib/tracks.ts` - track catalog, Cloudinary audio URL builder, 5 loaded recordings, 120 decorative records.
-- `lib/scratchSound.ts` - unloaded-record rejection sound.
-- `public/images/` - image assets used by the room / jukebox experience.
+`lib/tracks.ts` is the source of truth. The September 2026 real-catalog pass contains 52 playable entries:
 
-## Current loaded recordings
+- 5 original Jeffrey Taylor cuts remain on versioned Cloudinary URLs.
+- 20 selected/deduplicated Jacob Darling recordings from the existing shared Drive archive.
+- 27 selected MP3 recordings from the newer September Drive folder.
 
-The app currently loads five Cloudinary MP3s from cloud `dr0xs4iar` under `jeffreys-jukebox/audio`:
+The old 120-title generated catalog and its fake artists/titles are intentionally removed.
 
-| Code | Current title | Artist | Source note |
-| --- | --- | --- | --- |
-| A3 | Back Room Serenade | Jeffrey Taylor | `track-01` |
-| C7 | Last Call Waltz | Jeffrey Taylor | `track-02` |
-| F2 | Neon on Carrollton | Jeffrey Taylor | `track-04`; code comment says `track-03` is missing from Cloudinary |
-| H8 | Pool Table Moon | Jeffrey Taylor | `track-05` |
-| L4 | Superman (Cover) | Jeffrey Taylor | `superman-cover` |
+The first five original recordings are now compactly coded A1-A5 inside the real-only catalog. Do not assume the older A3/C7/F2/H8/L4 slot layout still applies.
 
-Do not casually change selection codes or Cloudinary URLs. If new audio is added, preserve the jukebox selection model and intentionally map each loaded track to a stable jukebox code.
+## Drive source libraries
 
-## Google Drive audio source folder
+Existing archive:
 
-User-provided Drive folder:
+`https://drive.google.com/drive/folders/1eL4osoCpmMGvaxp8Q_4MUTxE-jIUtyIn`
 
-`https://drive.google.com/drive/folders/1eL4osoCpmMGvaxp8Q_4MUTxE-jIUtyIn?usp=sharing`
+September 2026 additions:
 
-Reviewed folder contents are audio files only, including many Jacob Darling `.m4a` demos, several `.wav` masters, and duplicate variants. Examples include:
+`https://drive.google.com/drive/folders/1iSB3JdCw3SUy7OzbzMlekUT2MSVrnhrA`
 
-- `Jacob Darling - WAITIN FOR SUPERMAN.m4a`
-- `Jacob Darling - WAITIN FOR SUPERMAN (1).m4a`
-- `Jacob Darling - good good time.m4a` plus multiple numbered variants
-- `Display Pie Remaster.wav`
-- `dublin_Blues.wav`
-- `Scotty Jams.wav`
-- `Heps Duet (Mastered with Thunder at 54pct).mp3`
-- `Pie_is_Pie (Mastered with Thunder at 0pct).wav`
+These folders are master/source libraries. They include duplicates, alternate takes, M4A files, large WAV masters, FLAC material, and finished MP3s.
 
-This Drive folder should be treated as a source library / staging catalog, not as the current production delivery layer. The production app currently references Cloudinary assets from `lib/tracks.ts`.
+Current policy:
 
-Recommended future workflow before adding Drive tracks:
+1. Deduplicate obvious copies.
+2. Prefer already web-friendly recordings for immediate catalog additions.
+3. Keep large WAV/FLAC masters out of browser delivery until listened to, classified, normalized, and exported.
+4. Long term, move canonical web masters to Cloudinary or another dedicated media/CDN layer and leave Drive as the archive.
+5. Never claim a file is a finished song, original, cover, instrumental, or preferred master based only on its filename; verify by listening when that distinction matters.
 
-1. Inventory the Drive folder into a simple table: title, file id, format, size, created time, modified time, likely duplicate group, candidate status.
-2. Listen / classify tracks before renaming or uploading.
-3. Pick canonical versions for each song.
-4. Convert or normalize for web delivery.
-5. Upload final web-ready audio to a stable delivery location.
-6. Add selected tracks to `lib/tracks.ts` with stable jukebox codes.
-7. Run local build and playback smoke test.
+See `docs/audio-catalog.md` for exact Drive IDs and the normalization backlog.
 
-## Design and product rules
+## Playback behavior
 
-- Preserve the one-of-one neighborhood-bar feel.
-- Avoid turning the app into a normal streaming player UI.
-- Keep the photo-room illusion intact: the room should remain visible during browsing and playback.
-- Keep the jukebox as the center of interaction.
-- Maintain large controls and keyboard-visible focus states.
-- Respect reduced-motion preferences when adding parallax, animation, smoke, camera motion, or reactive effects.
-- Keep decorative tracks as an intentional part of the experience unless a future product decision expands the real catalog.
-- Do not add accounts, payments, comments, databases, or tracking unless the next phase explicitly calls for it.
-- Favor small, verifiable improvements over large rewrites.
+- Every visible catalog entry is intended to be a real playable recording.
+- Previous/next moves through the real catalog.
+- Catalog pages are derived from actual track-code letters rather than a hard-coded 120-slot book.
+- Audio continues while browsing.
+- The persistent dock supports click-to-seek and keyboard ±10-second seeking.
+- Global shortcuts while at the machine and outside focused controls:
+  - `Space`: pause/resume
+  - `←`: previous recording
+  - `→`: next recording
+  - `Esc`: step back
+- The Web Audio analyser currently uses `fftSize = 256` and drives both the VU strip and ambient room visualization.
+- Remote Playback remains progressive enhancement only.
 
-## Verification before claiming done
+## UX and visual rules
 
-Minimum checks after code changes:
+- Do not turn the project into a Spotify clone, dashboard, card grid, or generic SaaS interface.
+- Maintain the single-scene room illusion and make the machine feel physical.
+- New visuals should feel analog, worn, neon-lit, brass/chrome, photographic, and specific to Indianapolis bar culture.
+- Audio-reactive motion should be subtle enough that the recording stays primary.
+- Respect `prefers-reduced-motion`.
+- Keep keyboard focus visible and controls usable on mobile.
+- A true Three.js / React Three Fiber layer is a future option, not a default dependency. Introduce it only if a specific 3D interaction justifies bundle and rendering cost, and keep playback functional without WebGL.
 
-```bash
-npm install
-npm run build
-npm run dev -- --hostname 127.0.0.1
-```
+## Deployment safety
 
-Manual smoke test:
+Work on a branch and use a PR unless the user explicitly requests direct main changes.
 
-- Arrival page loads and photo background is visible.
-- Hotspot walks up to the machine.
-- Catalog pages turn.
-- A loaded `JT` track plays.
-- Pause / resume works from cabinet and dock.
-- Previous / next skip among loaded tracks.
-- A decorative non-`JT` track rejects playback intentionally.
-- Volume control works.
-- Layout remains tappable around 560px width and desktop width.
-- No obvious overlap between dock, cabinet, transport controls, and hotspot.
-- Reduced-motion users are not forced into pointer parallax or excessive motion.
+Before merging:
 
-## Known review notes
+1. Run or obtain `npm run check` through CI/Vercel.
+2. Verify Vercel preview is green.
+3. Play one original Cloudinary track.
+4. Play at least two Drive-backed tracks from different source folders.
+5. Test seeking and next/previous.
+6. Confirm the analyser visuals react.
+7. Test a narrow mobile viewport.
+8. Test reduced-motion behavior.
 
-See `docs/initial-improvement-notes.md` for the initial low-hanging-fruit list captured during the 2026-09-10 review.
+Do not merge a red Vercel preview.
 
-## Agent handoff guidance
+## Next improvement targets
 
-When starting future work:
+- Normalize and CDN-publish the WAV/M4A backlog after listening/classification.
+- Optimize or replace the approximately 2.48 MB `public/images/intro-screen.png` while preserving its look.
+- Create a dedicated social/OG image instead of relying permanently on the room screenshot.
+- Consider richer record-sleeve or label artwork per canonical track once titles/masters are verified.
+- Consider one optional progressive-enhancement 3D feature, such as an inspectable spinning 45 or audio-reactive chrome/neon geometry, only after the core real-catalog build is stable.
 
-1. Read this file first.
-2. Read `README.md`, but verify it against current code because the README may contain stale references to features removed in the latest production direction.
-3. Inspect `lib/tracks.ts` before changing audio or title catalog behavior.
-4. Inspect `components/jukebox.tsx`, `components/JukeboxCabinet.tsx`, and `hooks/useJukeboxAudio.ts` before changing interaction behavior.
-5. Verify Vercel deployment state and runtime errors before diagnosing production issues.
-6. Prefer a branch and PR for changes unless the user explicitly asks for a direct main-branch commit.
+## Future-agent start sequence
+
+1. Read this file.
+2. Read `README.md`.
+3. Inspect `lib/tracks.ts` and `docs/audio-catalog.md` for any audio work.
+4. Inspect `components/jukebox.tsx`, `components/JukeboxCabinet.tsx`, and `hooks/useJukeboxAudio.ts` for interaction work.
+5. Check current GitHub/Vercel status before diagnosing deployment behavior.
+6. Keep source/master Drive files separate from production delivery decisions.

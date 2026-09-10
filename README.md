@@ -1,29 +1,46 @@
 # Jeffrey's Jukebox
 
-A private, immersive neighborhood-bar jukebox for singer Jeffrey Taylor. The experience is presented as a one-of-one machine from **Darling Juke Joint Works · Indiana · Established 1985**.
+Jeffrey's Jukebox is an immersive, one-of-one neighborhood-bar music player built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, the Web Audio API, and native browser media features.
 
-## The experience
+The visual thesis is **analog Indianapolis listening room**: the interface should feel like walking up to a battered private-pressing jukebox at the Alley Cat, not opening a generic streaming app.
 
-- The Alley Cat-style room remains visible from arrival through playback; the app never jumps to a generic music-player screen.
-- The opening fades in from black and slowly settles into the room like walking through the bar door.
-- **Walk Up & Pick a Song** uses a first-person camera move toward the same battered machine while leaving the neighboring bar environment visible.
-- The title catalog is stocked with 120 numbered selections: A1–A10 through L1–L10.
-- Five `JT`-marked selections contain Jeffrey's real recovered recordings.
-- Decorative selections politely behave like records that are listed but not loaded.
-- The title book flips in paired pages: A/B, C/D, E/F, and so on.
-- The visible record changer selects, places, spins, and lowers its tonearm during playback.
-- **Light One Up** ramps a native Canvas 2D smoke field through the whole room while a subtle Web Audio treatment warms the sound.
-- The smoke is cursor-reactive, device-pixel-ratio aware, and fully stops its animation loop at zero density to preserve battery.
-- Left and right room views use real Alley Cat pool-room, signed-wall, and graffiti-alley photography without leaving the listening room.
-- Side views reveal an interactive cardboard coaster that switches between sober bar advice and hazy late-night realizations.
-- The crooked napkin card serves another thought without leaving the room or interrupting the record.
-- The arrival plaque opens a compact Alley Cat history card using the real exterior and 6267 Carrollton Ave details.
-- A lightweight analyser shared with the existing Web Audio graph drives a red-orange joint ember from Jeffrey's real-time vocal and music levels.
-- Music continues while browsing title cards, turning pages, changing the room mood, looking around, or stepping away from the machine.
-- A persistent now-playing strip keeps pause/resume, progress, and track identity available outside the close-up.
-- Supported browsers expose their native Remote Playback picker for compatible TVs and speakers; unsupported devices hide that control.
-- Media Session metadata gives Jeffrey useful lock-screen and device-level track information where supported.
-- Large controls, keyboard focus states, responsive layouts, and reduced-motion support are included.
+## Current experience
+
+- A persistent Alley Cat back-room photograph anchors the experience.
+- **Walk Up & Pick a Real Recording** moves the camera into the playable jukebox.
+- The catalog now contains **real recordings only**. Generated/fake title cards have been removed.
+- The five recordings that originally shipped remain available.
+- Additional Jacob Darling recordings are sourced from the supplied Google Drive archives.
+- Drive recordings are served through `app/api/audio/[id]/route.ts`, which proxies the shared files through the app and forwards range-related audio headers where available.
+- The title catalog is paginated from the actual catalog letters rather than assuming 120 fake slots.
+- The Web Audio analyser drives the machine VU meter plus a new room-scale audio-reactive ambient spectrum and glow.
+- A persistent player supports pause/resume, previous/next, progress, click-to-seek, and keyboard seeking.
+- Media Session metadata supports lock-screen/device playback controls where the browser allows it.
+- Native Remote Playback is exposed on compatible browsers/devices.
+- Pointer parallax and cabinet tilt provide depth without requiring a heavy 3D framework.
+- Reduced-motion behavior is preserved.
+
+## Catalog
+
+The source of truth is `lib/tracks.ts`.
+
+Current catalog groups include:
+
+- the original Jeffrey Taylor Cloudinary recordings
+- selected, deduplicated Jacob Darling recordings from the existing shared Drive archive
+- web-ready MP3 selections from the September 2026 Drive folder
+
+Large WAV/FLAC masters stay in Drive for now. They should be normalized and moved to durable media delivery before being added to production playback.
+
+### Audio source folders
+
+Existing archive:
+
+`https://drive.google.com/drive/folders/1eL4osoCpmMGvaxp8Q_4MUTxE-jIUtyIn`
+
+September 2026 additions:
+
+`https://drive.google.com/drive/folders/1iSB3JdCw3SUy7OzbzMlekUT2MSVrnhrA`
 
 ## Run locally
 
@@ -34,81 +51,84 @@ npm run dev -- --hostname 127.0.0.1
 
 Open `http://127.0.0.1:3000`.
 
-## Jeffrey's recovered tracks
+## Quality checks
 
-The five loaded entries at the top of `lib/tracks.ts`:
+```bash
+npm run typecheck
+npm run build
+npm run check
+```
 
-- `A3` — Back Room Serenade
-- `C7` — Last Call Waltz
-- `F2` — Neon on Carrollton
-- `H8` — Pool Table Moon
-- `L4` — Superman (Cover)
+`npm run check` is the default pre-merge verification path.
 
-Change the `title` and `artist` values without changing the Cloudinary audio URLs or selection codes.
+## Interaction shortcuts
 
-## Audio delivery
+When standing at the machine and focus is not inside a control:
 
-The five recordings are public, versioned MP3 assets in Cloudinary cloud `dr0xs4iar`, under `jeffreys-jukebox/audio`. Playback uses the Web Audio API only for the optional room treatment; the source recordings are not altered.
+- `Space` — pause/resume
+- `←` — previous real recording
+- `→` — next real recording
+- `Esc` — step back from the machine
 
-## Front-end architecture
+The persistent progress strip also accepts left/right keys for 10-second seeking.
 
-The UI uses React 19, the Next.js 16 App Router, fully typed TypeScript, Tailwind CSS v4 semantic theme tokens, a global React 19 mood context, native Canvas 2D smoke rendering, and the native Web Audio API. No animation framework is shipped.
+## Architecture
 
-`app/page.tsx` remains a Server Component and wraps the complete experience in `MoodProvider`. The client-side `JukeboxStage` is the integration master: it supplies the smoke as the atmosphere slot and the coaster as the foreground slot without moving or remounting the jukebox audio element. The rendered stack is explicitly ordered as authentic room photo, smoke, mechanical cabinet, then interactive controls and coaster.
+- `app/page.tsx` — Server Component entry point
+- `app/api/audio/[id]/route.ts` — shared-Drive audio proxy
+- `components/jukebox.tsx` — listening-room orchestration
+- `components/JukeboxCabinet.tsx` — machine/catalog/playback surface
+- `components/MusicDock.tsx` — persistent playback controls
+- `components/AudioReactiveAura.tsx` — analyser-driven room visualization
+- `components/VuMeter.tsx` — analyser-driven machine meter
+- `hooks/useJukeboxAudio.ts` — playback state, Web Audio graph, seeking, catalog navigation
+- `hooks/useRemotePlayback.ts` — native Remote Playback support
+- `hooks/useSceneParallax.ts` — low-cost room parallax
+- `lib/tracks.ts` — real recording catalog
+- `app/globals.css` — core room/cabinet styling
+- `app/jukebox-effects.css` — audio-reactive and new enhancement styling
 
-Core logic is split across:
+## Audio delivery strategy
 
-- `hooks/useJukeboxAudio.ts` — Web Audio graph, mood filter, analyser state, playback
-- `hooks/useRemotePlayback.ts` — Remote Playback API state
-- `components/JukeboxCabinet.tsx` — visual machine only
-- `components/MusicDock.tsx` — persistent now-playing strip
-- `components/HazeLighter.tsx` — brass lighter ignition ritual
-- `components/jukebox.tsx` — room navigation and orchestration
+The original five tracks remain versioned Cloudinary assets. Newly cataloged recordings can play from shared Google Drive through the same-origin proxy route.
 
-## 5-minute smoke test checklist
+The Drive proxy is a practical ingestion bridge, not the ideal final CDN architecture. As the catalog stabilizes:
 
-Run `npm run build` first. Then open `http://127.0.0.1:3000` and verify each item before claiming done.
+1. identify canonical versions and remove duplicates
+2. normalize loudness and export web-ready masters
+3. upload canonical files to Cloudinary or another dedicated audio/CDN layer
+4. replace Drive proxy URLs in `lib/tracks.ts` while keeping the catalog identity stable
+5. retain Drive as the source/master archive
 
-### Arrival and navigation
+## Design rules
 
-- [ ] Page fades in from black; room photo is visible (not a blank screen).
-- [ ] **← POOL ROOM** shows the pool-room photo and story header **THE BACK ROOM**.
-- [ ] **JUKEBOX** returns to center / intro view.
-- [ ] **SIGNED WALL →** shows the signed-wall photo and **SCRATCHED INTO THE WALL** story.
-- [ ] **Walk Up & Pick a Song** animates toward the machine without breaking layout.
+- Keep the room illusion and physical-machine metaphor.
+- Real recordings only; do not generate filler tracks.
+- Avoid turning the app into a generic Spotify-style library.
+- Prefer audio-reactive, physical, tactile interactions over decorative dashboard UI.
+- Keep motion purposeful and respect `prefers-reduced-motion`.
+- Avoid new heavy dependencies unless they create a clearly better experience than CSS, Canvas, or the existing Web Audio graph.
+- If a true 3D feature is introduced, isolate it behind progressive enhancement so playback remains fast and reliable on mobile.
 
-### Playback
+## Quick smoke test
 
-- [ ] Select **A3** and press play; audio starts and vinyl spins.
-- [ ] LED message shows track status; music dock appears with progress.
-- [ ] Pause/resume works from both cabinet and dock.
-- [ ] Skip prev/next moves between the five Jeffrey cuts only.
-- [ ] Pick a dummy track (no JT mark); LED flashes **RECORD SCRATCHED. PICK ANOTHER, JEFF.**
+- [ ] Arrival photo loads and the walk-up hotspot is usable.
+- [ ] Walking up reveals the cabinet without layout breakage.
+- [ ] Catalog contains only real recordings and page navigation stops at the last real page.
+- [ ] Original Jeffrey track plays from Cloudinary.
+- [ ] Drive-backed Jacob track plays through `/api/audio/[id]`.
+- [ ] VU meter and ambient visualizer react while audio is playing.
+- [ ] Pause/resume and previous/next work from the cabinet.
+- [ ] Persistent dock appears after playback begins.
+- [ ] Clicking the progress strip seeks.
+- [ ] Space/arrow/Escape shortcuts work outside focused controls.
+- [ ] Remote Playback control remains hidden where unsupported.
+- [ ] Mobile layout remains usable.
+- [ ] Reduced-motion mode does not depend on animated effects.
+- [ ] `npm run check` completes successfully.
 
-### Haze and smoke
+## Deployment
 
-- [ ] **LIGHT ONE UP** (arrival) or cabinet lighter ignites within ~3 seconds of visible room fog.
-- [ ] Status reads **ROOM: HAZY**; clearing returns **ROOM: CLEAR ENOUGH**.
-- [ ] Smoke particles drift above the grain overlay (not invisible underneath).
-- [ ] After 5+ minutes hazy, room gently breathes (lazy-drift).
+The GitHub repository is connected to Vercel. Non-production branches create preview deployments through the Git integration; `main` is production.
 
-### Side features
-
-- [ ] Pool room view: joint ember visible top-right; pulses brighter during playback.
-- [ ] Side views: coaster is anchored on the bar surface, not overlapping nav/dock.
-- [ ] Coaster opens sober thoughts when clear; high thoughts when hazy.
-- [ ] Marquee letter flickers; **SERVICED BY JACOB** sticker visible on cabinet.
-
-### Layout (mobile + desktop)
-
-- [ ] At 560px width: nav, dock, coaster, and ember do not overlap.
-- [ ] At desktop width: same — all controls remain tappable.
-- [ ] Music dock pushes look-controls up when visible.
-
-### Build
-
-- [ ] `npm run build` completes with zero errors.
-
-## Deploy
-
-The app is a static Next.js 16 App Router page and can be imported directly into Vercel from GitHub. No runtime environment variables are required.
+Because Drive-backed tracks use a Route Handler, the current application is no longer purely static. Vercel must allow the Node.js route runtime used by `app/api/audio/[id]/route.ts`.
