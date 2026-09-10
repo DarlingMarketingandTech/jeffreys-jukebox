@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 const DRIVE_ID = /^[A-Za-z0-9_-]{10,128}$/;
 
