@@ -1,7 +1,5 @@
 import type { NextRequest } from "next/server";
 
-export const runtime = "nodejs";
-
 const DRIVE_ID = /^[A-Za-z0-9_-]{10,128}$/;
 
 async function proxyDriveAudio(request: NextRequest, id: string) {
