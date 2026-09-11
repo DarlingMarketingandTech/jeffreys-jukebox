@@ -5,134 +5,90 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AudioReactiveAura } from "@/components/AudioReactiveAura";
 import { JukeboxCabinet } from "@/components/JukeboxCabinet";
 import { MusicDock } from "@/components/MusicDock";
+import { RecordVault } from "@/components/RecordVault";
 import { useJukeboxAudio } from "@/hooks/useJukeboxAudio";
 import { useRemotePlayback } from "@/hooks/useRemotePlayback";
 import { useSceneParallax } from "@/hooks/useSceneParallax";
 import type { Track } from "@/lib/tracks";
 
-interface JukeboxProps {
-  tracks: Track[];
-}
+interface JukeboxProps { tracks: Track[]; }
 
 export function Jukebox({ tracks }: JukeboxProps) {
   const movementTimerRef = useRef<number | null>(null);
   const roomRef = useSceneParallax<HTMLElement>();
   const pageLetters = useMemo(() => Array.from(new Set(tracks.map((track) => track.code[0]))), [tracks]);
-
   const [approached, setApproached] = useState(false);
   const [walking, setWalking] = useState(false);
-
+  const [vaultOpen, setVaultOpen] = useState(false);
   const audio = useJukeboxAudio({ tracks, pageLetters });
   const { remoteSupported, remoteAvailable, remoteState, promptRemotePlayback } = useRemotePlayback(audio.audioRef);
 
-  useEffect(() => {
-    return () => {
-      if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
-    };
+  useEffect(() => () => {
+    if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
   }, []);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
-
     navigator.mediaSession.metadata = new MediaMetadata({
       title: audio.activeTrack.title,
       artist: audio.activeTrack.artist,
-      album: "Jeffrey's Jukebox · Private Pressings",
+      album: "J&J Jukebox · Private Pressings",
     });
     navigator.mediaSession.playbackState = audio.playing ? "playing" : "paused";
-
-    const handlePlay = () => {
-      if (audio.audioRef.current?.paused) void audio.toggleActivePlayback();
-    };
-    const handlePause = () => {
-      if (audio.audioRef.current && !audio.audioRef.current.paused) void audio.toggleActivePlayback();
-    };
-    const handlePrevious = () => { void audio.moveLoaded(-1); };
-    const handleNext = () => { void audio.moveLoaded(1); };
-
     try {
-      navigator.mediaSession.setActionHandler("play", handlePlay);
-      navigator.mediaSession.setActionHandler("pause", handlePause);
-      navigator.mediaSession.setActionHandler("previoustrack", handlePrevious);
-      navigator.mediaSession.setActionHandler("nexttrack", handleNext);
-    } catch {
-      // Some browsers reject action handlers.
-    }
-
+      navigator.mediaSession.setActionHandler("play", () => void audio.toggleActivePlayback());
+      navigator.mediaSession.setActionHandler("pause", () => void audio.toggleActivePlayback());
+      navigator.mediaSession.setActionHandler("previoustrack", () => void audio.moveLoaded(-1));
+      navigator.mediaSession.setActionHandler("nexttrack", () => void audio.moveLoaded(1));
+    } catch {}
     return () => {
       try {
         navigator.mediaSession.setActionHandler("play", null);
         navigator.mediaSession.setActionHandler("pause", null);
         navigator.mediaSession.setActionHandler("previoustrack", null);
         navigator.mediaSession.setActionHandler("nexttrack", null);
-      } catch {
-        // Ignore cleanup errors.
-      }
+      } catch {}
     };
   }, [audio.activeTrack, audio.playing, audio.toggleActivePlayback, audio.moveLoaded]);
 
   useEffect(() => {
-    if (!approached) return;
-
     const handleKeyboard = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
-      const isTypingTarget = target?.matches("input, textarea, select, button, [contenteditable='true']");
-
+      const isTyping = target?.matches("input, textarea, select, [contenteditable='true']");
       if (event.key === "Escape") {
-        moveCamera(false);
+        if (vaultOpen) setVaultOpen(false);
+        else if (approached) moveCamera(false);
         return;
       }
-      if (isTypingTarget) return;
-
-      if (event.code === "Space") {
-        event.preventDefault();
-        void audio.toggleActivePlayback();
-      } else if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        void audio.moveLoaded(-1);
-      } else if (event.key === "ArrowRight") {
-        event.preventDefault();
-        void audio.moveLoaded(1);
-      }
+      if (isTyping || !approached) return;
+      if (event.code === "Space") { event.preventDefault(); void audio.toggleActivePlayback(); }
+      if (event.key === "ArrowLeft") { event.preventDefault(); void audio.moveLoaded(-1); }
+      if (event.key === "ArrowRight") { event.preventDefault(); void audio.moveLoaded(1); }
+      if (event.key.toLowerCase() === "v") setVaultOpen((current) => !current);
     };
-
     window.addEventListener("keydown", handleKeyboard);
     return () => window.removeEventListener("keydown", handleKeyboard);
-  }, [approached, audio.moveLoaded, audio.toggleActivePlayback]);
+  }, [approached, vaultOpen, audio.moveLoaded, audio.toggleActivePlayback]);
 
   function moveCamera(nextApproached: boolean) {
     if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
     setWalking(true);
     setApproached(nextApproached);
+    if (!nextApproached) setVaultOpen(false);
     movementTimerRef.current = window.setTimeout(() => setWalking(false), 1250);
   }
 
-  const roomClasses = [
-    "bar-room",
-    approached ? "approached" : "standing-back",
-    walking ? "camera-moving" : "",
-    audio.showMusicDock ? "has-music-dock" : "",
-  ].filter(Boolean).join(" ");
+  const roomClasses = ["bar-room", approached ? "approached" : "standing-back", walking ? "camera-moving" : "", vaultOpen ? "vault-is-open" : "", audio.showMusicDock ? "has-music-dock" : ""].filter(Boolean).join(" ");
 
   return (
     <main className={roomClasses} ref={roomRef}>
       <div className="scene-frame" data-layer="0-background">
-        <Image
-          src="/images/intro-screen.png"
-          alt="The back room of the Alley Cat Lounge: an old jukebox glowing teal against a wall of framed photos, a stool waiting in front of it"
-          fill
-          priority
-          sizes="100vw"
-        />
+        <Image src="/images/intro-screen.png" alt="A glowing jukebox in a gritty Indianapolis bar room" fill priority sizes="100vw" />
         <div className="scene-shade" aria-hidden="true" />
         {!approached && (
-          <button
-            className="jukebox-hotspot"
-            onClick={() => moveCamera(true)}
-            aria-label="Walk up to the jukebox and pick a song"
-          >
+          <button className="jukebox-hotspot" onClick={() => moveCamera(true)} aria-label="Walk up to the jukebox">
             <span className="hotspot-ring" aria-hidden="true" />
-            <span className="hotspot-label">WALK UP &amp; PICK A REAL RECORDING</span>
+            <span className="hotspot-label">WALK UP &amp; PICK A RECORD</span>
           </button>
         )}
       </div>
@@ -142,29 +98,19 @@ export function Jukebox({ tracks }: JukeboxProps) {
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
 
-      <div className="bar-location" data-layer="3-controls">
-        <b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span>
-      </div>
-      <div className="real-library-chip" data-layer="3-controls">
-        <b>{tracks.length} REAL CUTS</b>
-        <span>JACOB + JEFFREY · PRIVATE ARCHIVE</span>
-      </div>
+      <div className="bar-location"><b>J&amp;J JUKEBOX</b><span>INDIANAPOLIS · PRIVATE ROOM</span></div>
+      <div className="real-library-chip"><b>{tracks.length} CURATED CUTS</b><span>JACOB + JEFFREY</span></div>
 
       {!approached && (
-        <section className="arrival-lockup" data-layer="3-controls" aria-label="Jeffrey's Jukebox at the Alley Cat">
-          <div className="arrival-logo">
-            <span>PRIVATE PRESSINGS</span>
-            <h1>JEFFREY&apos;S</h1>
-            <strong>JUKEBOX</strong>
-            <i>JT</i>
-          </div>
-          <p>{tracks.length} real recordings from Jacob Darling and Jeffrey Taylor. One old machine. No fake title cards.</p>
-          <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
+        <section className="arrival-lockup" aria-label="Jacob and Jeffrey's Jukebox">
+          <div className="arrival-logo"><span>PRIVATE PRESSINGS</span><h1>J&amp;J</h1><strong>JUKEBOX</strong><i>45</i></div>
+          <p>A private recording archive for Jacob and Jeffrey. Real tracks, one old machine.</p>
+          <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JJ-85</small>
         </section>
       )}
 
       <JukeboxCabinet
-        interactive={approached}
+        interactive={approached && !vaultOpen}
         mechanism={audio.mechanism}
         message={audio.message}
         leftLetter={audio.leftLetter}
@@ -192,10 +138,23 @@ export function Jukebox({ tracks }: JukeboxProps) {
       />
 
       {approached && (
-        <button className="step-back" onClick={() => moveCamera(false)}>
-          ← STEP BACK · ESC
-        </button>
+        <nav className="jj-mode-switch" aria-label="Jukebox views">
+          <button className={!vaultOpen ? "active" : ""} onClick={() => setVaultOpen(false)}>JUKEBOX</button>
+          <button className={vaultOpen ? "active" : ""} onClick={() => setVaultOpen(true)}>RECORD VAULT</button>
+        </nav>
       )}
+
+      {approached && vaultOpen && (
+        <RecordVault
+          tracks={tracks}
+          activeTrack={audio.activeTrack}
+          playing={audio.playing}
+          onChooseTrack={audio.chooseTrack}
+          onPlayTrack={(track) => void audio.startTrack(track)}
+        />
+      )}
+
+      {approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK · ESC</button>}
 
       {audio.showMusicDock && (
         <MusicDock
@@ -211,14 +170,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
         />
       )}
 
-      <audio
-        ref={audio.audioRef}
-        src={audio.activeTrackAudio}
-        crossOrigin="anonymous"
-        preload="metadata"
-        playsInline
-        {...audio.audioHandlers}
-      />
+      <audio ref={audio.audioRef} src={audio.activeTrackAudio} crossOrigin="anonymous" preload="metadata" playsInline {...audio.audioHandlers} />
     </main>
   );
 }

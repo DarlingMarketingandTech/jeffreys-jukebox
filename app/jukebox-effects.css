@@ -35,19 +35,8 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
-
-.ambient-orbit-one {
-  width: min(62vw, 760px);
-  aspect-ratio: 1;
-  box-shadow: 0 0 calc(22px + var(--audio-energy) * 55px) rgba(60, 231, 208, .12);
-}
-
-.ambient-orbit-two {
-  width: min(43vw, 520px);
-  aspect-ratio: 1;
-  border-color: rgba(182, 66, 48, calc(.08 + var(--audio-bass) * .2));
-  transform: translate(-50%, -50%) rotate(22deg) scaleY(.72);
-}
+.ambient-orbit-one { width: min(62vw, 760px); aspect-ratio: 1; box-shadow: 0 0 calc(22px + var(--audio-energy) * 55px) rgba(60, 231, 208, .12); }
+.ambient-orbit-two { width: min(43vw, 520px); aspect-ratio: 1; border-color: rgba(182, 66, 48, calc(.08 + var(--audio-bass) * .2)); transform: translate(-50%, -50%) rotate(22deg) scaleY(.72); }
 
 .ambient-spectrum {
   position: absolute;
@@ -62,7 +51,6 @@
   transform: translateX(-50%);
   mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
 }
-
 .ambient-spectrum i {
   width: clamp(2px, .38vw, 4px);
   height: 100%;
@@ -89,49 +77,198 @@
   backdrop-filter: blur(5px);
   text-align: right;
 }
+.real-library-chip b { color: #d9ca9f; font: 900 .64rem "Courier New", monospace; letter-spacing: .13em; }
+.real-library-chip span { color: #6fcbbf; font: 700 .49rem "Courier New", monospace; letter-spacing: .1em; }
 
-.real-library-chip b {
-  color: #d9ca9f;
-  font: 900 .64rem "Courier New", monospace;
-  letter-spacing: .13em;
+.jj-mode-switch {
+  position: fixed;
+  z-index: 55;
+  top: max(18px, env(safe-area-inset-top));
+  left: 50%;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #4e4432;
+  border-radius: 999px;
+  background: rgba(8, 7, 6, .88);
+  box-shadow: 0 10px 34px #000b, inset 0 0 18px #0008;
+  backdrop-filter: blur(9px);
+  transform: translateX(-50%);
 }
-
-.real-library-chip span {
-  color: #6fcbbf;
-  font: 700 .49rem "Courier New", monospace;
-  letter-spacing: .1em;
-}
-
-.music-dock .dock-progress {
+.jj-mode-switch button {
+  min-height: 32px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  color: #8f8164;
+  background: transparent;
+  font: 800 .52rem "Courier New", monospace;
+  letter-spacing: .12em;
   cursor: pointer;
 }
+.jj-mode-switch button.active {
+  color: #f0dfb8;
+  background: linear-gradient(180deg, #653126, #321815);
+  box-shadow: inset 0 0 0 1px #8e513a, 0 0 20px #9d362327;
+}
 
-.music-dock .dock-progress:focus-visible {
-  outline: 2px solid #58d8c6;
-  outline-offset: 4px;
+.record-vault {
+  position: fixed;
+  z-index: 48;
+  inset: 70px clamp(18px, 4vw, 60px) 88px;
+  overflow: auto;
+  padding: clamp(22px, 3vw, 38px);
+  border: 1px solid #5c4c34;
+  border-radius: 24px 24px 8px 8px;
+  color: #e5d8b4;
+  background:
+    linear-gradient(135deg, #ffffff08, transparent 22%),
+    radial-gradient(circle at 84% 4%, #2ed9c61f, transparent 25%),
+    linear-gradient(180deg, rgba(18, 16, 13, .97), rgba(7, 7, 6, .98));
+  box-shadow: 0 35px 90px #000e, inset 0 0 0 1px #ffffff06, inset 0 -60px 100px #0008;
+  backdrop-filter: blur(18px) saturate(.9);
+  animation: vault-open .42s cubic-bezier(.18,.8,.18,1) both;
+}
+
+.vault-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 360px);
+  gap: 24px;
+  align-items: end;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #4d422f;
+}
+.vault-kicker { color: #65d9c8; font: 800 .56rem "Courier New", monospace; letter-spacing: .22em; }
+.vault-header h2 { margin: 5px 0 4px; color: #eadbb7; font-size: clamp(1.9rem, 4vw, 3.7rem); font-weight: 500; letter-spacing: .05em; }
+.vault-header p { margin: 0; color: #958a73; font-size: .9rem; }
+.vault-search { display: grid; gap: 6px; }
+.vault-search span { color: #8f8061; font: 800 .5rem "Courier New", monospace; letter-spacing: .18em; }
+.vault-search input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid #5b4d37;
+  border-radius: 4px;
+  color: #efe3c4;
+  outline: none;
+  background: #080706;
+  font: 700 .72rem "Courier New", monospace;
+}
+.vault-search input:focus { border-color: #63d7c6; box-shadow: 0 0 0 3px #42d8c01f; }
+
+.vault-filter-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 20px;
+}
+.vault-switches { display: flex; flex-wrap: wrap; gap: 7px; }
+.vault-switches button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid #524630;
+  border-radius: 3px;
+  color: #91856c;
+  background: #0b0a08;
+  font: 800 .52rem "Courier New", monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.vault-switches button.active { color: #f0dfba; border-color: #9b7546; background: #2b2015; box-shadow: inset 0 0 14px #0007; }
+.artist-switches button.active { border-color: #4dcfbd; color: #b9eee6; background: #122824; }
+
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+}
+.record-card {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #413827;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #14110e, #0a0908);
+  box-shadow: 0 14px 32px #0009;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.record-card:hover { transform: translateY(-4px) rotate(-.2deg); border-color: #765e3c; box-shadow: 0 20px 38px #000b; }
+.record-card.is-active { border-color: #4ed8c5; box-shadow: 0 0 0 1px #4ed8c52e, 0 20px 42px #000b, 0 0 26px #38d2bc14; }
+.record-sleeve {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: 14px;
+  border: 0;
+  color: #f0e1b9;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px #ffffff19, inset 0 -80px 90px #000a;
+}
+.record-sleeve::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .3;
+  background-image: repeating-linear-gradient(116deg, transparent 0 9px, #ffffff0a 10px 11px);
+  mix-blend-mode: screen;
+}
+.sleeve-code, .sleeve-art-mark, .sleeve-title, .sleeve-meta { position: relative; z-index: 1; }
+.sleeve-code { position: absolute; top: 12px; left: 12px; color: #e6d7b2; font: 900 .58rem "Courier New", monospace; }
+.sleeve-art-mark { position: absolute; top: 10px; right: 12px; font: 700 clamp(1.4rem, 4vw, 2.5rem) var(--font-caveat), cursive; opacity: .78; transform: rotate(5deg); }
+.sleeve-title { font-size: clamp(1rem, 2vw, 1.35rem); line-height: 1.05; text-wrap: balance; }
+.sleeve-meta { margin-top: 7px; color: #d0c4a4b8; font: 800 .44rem "Courier New", monospace; letter-spacing: .08em; }
+.sleeve-0 .record-sleeve { background: radial-gradient(circle at 65% 30%, #d264313f, transparent 28%), linear-gradient(145deg, #663220, #160b09 70%); }
+.sleeve-1 .record-sleeve { background: linear-gradient(25deg, #0d241e, #507f6f 45%, #11100d 46% 51%, #ba9b61 52% 54%, #171411 55%); }
+.sleeve-2 .record-sleeve { background: radial-gradient(circle at 38% 34%, #cbbf9a 0 9%, #7f725e 10% 19%, #2d2822 20% 22%, transparent 23%), linear-gradient(155deg, #3d352d, #100d0a); }
+.sleeve-3 .record-sleeve { background: radial-gradient(circle at 72% 28%, #39d3bf 0 2%, transparent 3%), radial-gradient(circle at 58% 18%, #c85839 0 1%, transparent 2%), linear-gradient(150deg, #071215, #203b3e 42%, #5e211c); }
+.sleeve-4 .record-sleeve { background: linear-gradient(165deg, #b09a6b 0 18%, #2a2924 19% 23%, #6f5e3d 24% 27%, #16130d 28%); }
+.sleeve-5 .record-sleeve { background: repeating-linear-gradient(90deg, #1b1510 0 13px, #34261b 14px 17px), linear-gradient(#1c1813, #080706); }
+.sleeve-6 .record-sleeve { background: radial-gradient(circle at 50% 48%, #8e402b 0 21%, #17100c 22% 31%, #ba9c67 32% 35%, #11100d 36%); }
+.sleeve-7 .record-sleeve { background: linear-gradient(135deg, #684b31 0 21%, #171310 22% 30%, #35594f 31% 62%, #0b0908 63%); }
+
+.record-card-copy { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 62px; padding: 10px 4px 2px; }
+.record-card-copy div { min-width: 0; display: grid; gap: 3px; }
+.record-card-copy strong { overflow: hidden; color: #d8c9a4; font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.record-card-copy span { color: #776e5d; font: 700 .48rem "Courier New", monospace; }
+.record-card-copy button { flex: none; min-height: 30px; padding: 0 8px; border: 1px solid #655538; border-radius: 2px; color: #cbb886; background: #18140f; font: 900 .46rem "Courier New", monospace; cursor: pointer; }
+.vault-empty { padding: 34px 0; color: #8b8068; text-align: center; font-style: italic; }
+
+.vault-is-open .jukebox-zone { opacity: .12; transform: perspective(1200px) translateY(3vh) scale(.88); filter: blur(5px) brightness(.55); pointer-events: none; }
+.vault-is-open .ambient-spectrum { opacity: .42; }
+
+.music-dock .dock-progress { cursor: pointer; }
+.music-dock .dock-progress:focus-visible { outline: 2px solid #58d8c6; outline-offset: 4px; }
+
+@keyframes vault-open {
+  from { opacity: 0; transform: translateY(20px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @media (max-width: 760px) {
-  .real-library-chip {
-    top: auto;
-    right: 12px;
-    bottom: calc(12px + env(safe-area-inset-bottom));
-    min-width: 0;
-    padding: 7px 9px;
-  }
-
-  .real-library-chip b { font-size: .54rem; }
-  .real-library-chip span { font-size: .43rem; }
+  .real-library-chip { display: none; }
   .ambient-spectrum { width: 94vw; height: 52px; }
+  .jj-mode-switch { top: auto; bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .record-vault { inset: 56px 8px 124px; padding: 16px; border-radius: 14px 14px 4px 4px; }
+  .vault-header { grid-template-columns: 1fr; gap: 15px; }
+  .vault-header h2 { font-size: 2rem; }
+  .vault-filter-row { display: grid; }
+  .record-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .record-card { padding: 5px; }
+  .record-card-copy { min-height: 54px; }
+}
+
+@media (max-width: 430px) {
+  .record-grid { grid-template-columns: 1fr 1fr; }
+  .sleeve-title { font-size: .86rem; }
+  .record-card-copy button { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .audio-reactive-aura::before,
-  .ambient-spectrum i {
-    transition: none;
-  }
-
-  .ambient-spectrum {
-    display: none;
-  }
+  .audio-reactive-aura::before, .ambient-spectrum i, .record-card { transition: none; }
+  .ambient-spectrum { display: none; }
+  .record-vault { animation: none; }
 }
