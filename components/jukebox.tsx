@@ -3,8 +3,6 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BarPhilosophy } from "@/components/BarPhilosophy";
-import { DoorSwitch } from "@/components/DoorSwitch";
-import { FlickeringNeon } from "@/components/FlickeringNeon";
 import { JukeboxCabinet } from "@/components/JukeboxCabinet";
 import { MusicDock } from "@/components/MusicDock";
 import { useJukeboxAudio } from "@/hooks/useJukeboxAudio";
@@ -20,26 +18,16 @@ interface JukeboxProps {
 
 export function Jukebox({ tracks }: JukeboxProps) {
   const movementTimerRef = useRef<number | null>(null);
-  const outsideSettledTimerRef = useRef<number | null>(null);
   const { currentView, setView } = useMood();
   const mood = currentView;
-  const isOutside = currentView === "outside";
 
-  const [look, setLook] = useState<"left" | "center" | "right">("center");
   const [approached, setApproached] = useState(false);
   const [walking, setWalking] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [outsideSettled, setOutsideSettled] = useState(false);
 
   const audio = useJukeboxAudio({ tracks, mood, pageLetters });
   const { remoteSupported, remoteAvailable, remoteState, promptRemotePlayback } = useRemotePlayback(audio.audioRef);
-  const sceneImage = isOutside
-    ? "/images/alley-cat-exterior.webp"
-    : look === "left"
-      ? "/images/alley-cat-pool-room.webp"
-      : look === "right"
-        ? "/images/alley-cat-signed-wall.webp"
-        : "/images/alley-cat-bar.webp";
+  const sceneImage = "/images/intro-screen.png";
 
   useEffect(() => {
     if (!aboutOpen) return;
@@ -53,21 +41,8 @@ export function Jukebox({ tracks }: JukeboxProps) {
   useEffect(() => {
     return () => {
       if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
-      if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
     };
   }, []);
-
-  useEffect(() => {
-    if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
-    if (currentView !== "outside") {
-      setOutsideSettled(false);
-      return;
-    }
-    outsideSettledTimerRef.current = window.setTimeout(() => setOutsideSettled(true), 5 * 60 * 1000);
-    return () => {
-      if (outsideSettledTimerRef.current) window.clearTimeout(outsideSettledTimerRef.current);
-    };
-  }, [currentView]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
@@ -111,27 +86,17 @@ export function Jukebox({ tracks }: JukeboxProps) {
 
   function moveCamera(nextApproached: boolean) {
     if (movementTimerRef.current) window.clearTimeout(movementTimerRef.current);
-    setLook("center");
     setWalking(true);
     setApproached(nextApproached);
     movementTimerRef.current = window.setTimeout(() => setWalking(false), 1250);
   }
 
-  async function handleViewToggle() {
-    const nextView = isOutside ? "inside" : "outside";
-    setLook("center");
-    setView(nextView);
-    await audio.applyMoodSound(nextView);
-  }
-
   const roomClasses = [
     "bar-room",
-    `look-${look}`,
     approached ? "approached" : "standing-back",
     walking ? "camera-moving" : "",
     `mood-${mood}`,
     audio.showMusicDock ? "has-music-dock" : "",
-    outsideSettled ? "lazy-drift" : "",
   ].filter(Boolean).join(" ");
 
   return (
@@ -144,10 +109,13 @@ export function Jukebox({ tracks }: JukeboxProps) {
       <div className="room-grain" aria-hidden="true" />
       <div className="door-fade" aria-hidden="true" />
 
-      <div className="bar-location" data-layer="3-controls"><b>THE ALLEY CAT</b><span>INDIANAPOLIS · BACK ROOM</span></div>
+      <div className="room-shade" aria-hidden="true" />
+      <div className="night-air" aria-hidden="true" />
+      <div className="room-grain" aria-hidden="true" />
+      <div className="door-fade" aria-hidden="true" />
 
-      {!isOutside && !approached && look === "center" && (
-        <section className="arrival-lockup" data-layer="3-controls" aria-label="Enter Jeffrey's listening room">
+      {!approached && (
+        <section className="arrival-lockup" data-layer="3-controls" aria-label="Welcome to Jeffrey's listening room">
           <div className="arrival-logo">
             <span>PRIVATE PRESSINGS</span>
             <h1>JEFFREY&apos;S</h1>
@@ -157,12 +125,6 @@ export function Jukebox({ tracks }: JukeboxProps) {
           <p>Five Jeffrey Taylor originals. One old machine. Your stool is still open.</p>
           <div className="arrival-actions">
             <button className="step-up" onClick={() => moveCamera(true)}>WALK UP &amp; PICK A SONG <b>→</b></button>
-            <DoorSwitch
-              isOutside={false}
-              label="STEP OUTSIDE"
-              className="arrival-door"
-              onToggle={handleViewToggle}
-            />
           </div>
           <button className="about-trigger" onClick={() => setAboutOpen(true)}>ABOUT THE CAT · 6267 CARROLLTON AVE</button>
           <small>DARLING JUKE JOINT WORKS · INDIANA · MACHINE No. JT-85</small>
@@ -189,44 +151,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
         </aside>
       )}
 
-      {!isOutside && (
-        <nav className="look-controls" data-layer="3-controls" aria-label="Look around the bar">
-          <button onClick={() => setLook("left")} className={look === "left" ? "active" : ""}>← POOL ROOM</button>
-          <button onClick={() => setLook("center")} className={look === "center" ? "active" : ""}>JUKEBOX</button>
-          <button onClick={() => setLook("right")} className={look === "right" ? "active" : ""}>SIGNED WALL →</button>
-        </nav>
-      )}
-
-      {isOutside && (
-        <section className="alley-scene" data-layer="3-controls" aria-label="Out back in the alley">
-          <FlickeringNeon text="ALLEY CAT" />
-          <div className="alley-note">
-            <span>OUT BACK · CARROLLTON AVE</span>
-            <p>{audio.playing
-              ? "The jukebox keeps working through the brick. You can just make out the melody."
-              : "Cold air, quiet alley. The machine is waiting on you inside."}</p>
-          </div>
-          <DoorSwitch
-            isOutside
-            label="HEAD BACK INSIDE"
-            className="alley-door"
-            onToggle={handleViewToggle}
-          />
-        </section>
-      )}
-
-      <BarPhilosophy look={look} isOutside={isOutside} />
-
-      {!isOutside && look !== "center" && (
-        <aside className={`bar-story story-${look}`} aria-live="polite">
-          <span>{look === "left" ? "THE BACK ROOM" : "SCRATCHED INTO THE WALL"}</span>
-          <p>{look === "left"
-            ? "The original back bar: pool tables, wood paneling, cheap drinks, and the kind of room that never needed to be reinvented."
-            : "Forty years of initials, bad poetry, questionable drawings, and one warning: DON'T PLAY FREE BIRD BEFORE CLOSING."}</p>
-          {look === "right" && <div className="story-photo"><Image src="/images/alley-cat-graffiti-alley.webp" alt="The mural-covered alley outside the Alley Cat Lounge" fill sizes="360px" /></div>}
-          <button onClick={() => setLook("center")}>TURN BACK TO THE MUSIC</button>
-        </aside>
-      )}
+      <BarPhilosophy />
 
       <JukeboxCabinet
         mechanism={audio.mechanism}
@@ -241,7 +166,6 @@ export function Jukebox({ tracks }: JukeboxProps) {
         playing={audio.playing}
         selectedIsActive={audio.selectedIsActive}
         volume={audio.volume}
-        mood={mood}
         analyserNode={audio.analyserNode}
         remoteSupported={remoteSupported}
         remoteAvailable={remoteAvailable}
@@ -251,12 +175,11 @@ export function Jukebox({ tracks }: JukeboxProps) {
         onMoveLoaded={(direction) => void audio.moveLoaded(direction)}
         onMainPlay={() => void audio.handleMainPlayButton()}
         onVolumeChange={audio.setVolume}
-        onViewToggle={() => void handleViewToggle()}
         onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
       />
 
-      {!isOutside && approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
-      <div className="room-status" aria-live="polite">{isOutside ? "OUT BACK · MUSIC THROUGH THE WALL" : "INSIDE · BACK ROOM"}</div>
+      {approached && <button className="step-back" onClick={() => moveCamera(false)}>← STEP BACK FROM THE MACHINE</button>}
+      <div className="room-status" aria-live="polite">INSIDE · BACK ROOM</div>
 
       {audio.showMusicDock && (
         <MusicDock
@@ -266,7 +189,6 @@ export function Jukebox({ tracks }: JukeboxProps) {
           duration={audio.duration}
           remoteState={remoteState}
           remoteSupported={remoteSupported}
-          isOutside={isOutside}
           onTogglePlayback={() => void audio.toggleActivePlayback()}
           onPromptRemote={() => void promptRemotePlayback(audio.setMessage)}
         />

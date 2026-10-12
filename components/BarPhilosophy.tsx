@@ -9,24 +9,17 @@ function nextThoughtIndex(length: number, currentIndex: number) {
   return (currentIndex + offset) % length;
 }
 
-interface BarPhilosophyProps {
-  look: "left" | "center" | "right";
-  isOutside: boolean;
-}
+interface BarPhilosophyProps {}
 
-export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
+export function BarPhilosophy({}: BarPhilosophyProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [thoughtIndex, setThoughtIndex] = useState(0);
-  const thoughts = isOutside ? highThoughts : soberThoughts;
-  const visible = isOutside || look !== "center";
+  const thoughts = soberThoughts;
+  const visible = true;
 
   useEffect(() => {
     setThoughtIndex(0);
-  }, [isOutside]);
-
-  useEffect(() => {
-    if (!visible) setIsOpen(false);
-  }, [visible]);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -37,18 +30,15 @@ export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [isOpen]);
 
-  if (!visible) return null;
-
   const currentThought = thoughts[thoughtIndex % thoughts.length];
-  const anchorClass = look === "left" ? "coaster-anchor-left" : "coaster-anchor-right";
 
   return (
-    <div className={`coaster-anchor ${anchorClass}`}>
+    <div className="coaster-anchor coaster-anchor-right">
       <button
         type="button"
-        className={`coaster-button ${isOutside ? "coaster-button-outside" : ""}`}
+        className="coaster-button"
         onClick={() => setIsOpen(true)}
-        aria-label={isOutside ? "Read an alley thought from the glowing coaster" : "Read some bar philosophy from the coaster"}
+        aria-label="Read some bar philosophy from the coaster"
         aria-haspopup="dialog"
       >
         <span className="coaster-button-ring" aria-hidden="true" />
@@ -62,8 +52,8 @@ export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
         <section
           role="dialog"
           aria-modal="true"
-          aria-label={isOutside ? "Alley thought" : "Bar philosophy"}
-          className={`coaster-dialog torn-napkin ${isOutside ? "coaster-dialog-outside" : ""}`}
+          aria-label="Bar philosophy"
+          className="coaster-dialog torn-napkin"
         >
           <button
             type="button"
@@ -75,7 +65,7 @@ export function BarPhilosophy({ look, isOutside }: BarPhilosophyProps) {
           </button>
 
           <div className="coaster-dialog-header">
-            <span>{isOutside ? "ALLEY THOUGHT No." : "BAR NOTE No."} {String(thoughtIndex + 1).padStart(2, "0")}</span>
+            <span>BAR NOTE No. {String(thoughtIndex + 1).padStart(2, "0")}</span>
             <span>6267 CARROLLTON</span>
           </div>
 
