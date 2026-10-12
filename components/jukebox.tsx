@@ -47,6 +47,7 @@ export function Jukebox({ tracks }: JukeboxProps) {
       if (event.key === "Escape") setAboutOpen(false);
     };
     window.addEventListener("keydown", closeOnEscape);
+    document.querySelector<HTMLButtonElement>(".about-panel-close")?.focus();
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [aboutOpen]);
 
